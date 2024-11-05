@@ -1,0 +1,25 @@
+---
+- name: Deploy engaging website
+  hosts: myvms
+  become: yes
+  vars:
+    website_title: "Welcome to My Cool Website"
+  tasks:
+    - name: Install Apache web server
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Create index.html file with variable
+      template:
+        src: ./index.html.j2
+        dest: /var/www/html/index.html
+        mode: '0644'
+
+    - name: Ensure Apache is running
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+

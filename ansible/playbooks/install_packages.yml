@@ -1,0 +1,19 @@
+---
+- name: Install packages on VM
+  hosts: myvms
+  become: yes
+  tasks:
+    - name: Install git
+      apt:
+        name: git
+        state: present
+
+    - name: Install apache2
+      apt:
+        name: apache2
+        state: present
+
+    - name: Install net-tools
+      apt:
+        name: net-tools
+        state: present
