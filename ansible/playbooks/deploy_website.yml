@@ -3,7 +3,7 @@
   hosts: myvms
   become: yes
   vars:
-    website_title: "Welcome to My Cool Website"
+    website_title: "Welcome to My Sad and terrible Website"
   tasks:
     - name: Install Apache web server
       apt:
