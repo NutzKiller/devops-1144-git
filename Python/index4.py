@@ -83,3 +83,9 @@
 # matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] #define a list with 3 lists inside
 # result = [row[1] for row in matrix] #define result as the [1] index and for loop each row in the second index
 # print(result) #output: [2,5,8]
+
+numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+fruits = ["apple", "orange", "kiwi"]
+for i in range(len(numbers)):
+  print(i)
+               
