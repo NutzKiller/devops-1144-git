@@ -153,12 +153,12 @@ import random
 # result = find_max(numbers)
 # print(result)
 
-# #18
-# def celsius_to_fahrenheit(c):
-#   c = (c * 9/5) + 32
-#   return c
-# result = celsius_to_fahrenheit(10)
-# print(result)
+#18
+def celsius_to_fahrenheit(c):
+  c = (c * 9/5) + 32
+  return c
+result = celsius_to_fahrenheit(-200)
+print(result)
 
 # #19
 # def is_palindrome(word):
