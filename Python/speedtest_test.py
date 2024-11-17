@@ -1,59 +1,59 @@
-# import speedtest
-# import datetime
-
-# st = speedtest.Speedtest()
-# today = datetime.datetime.now().strftime("[%d/%m/%Y/%H:%M:%S]")
-
-# def speed_testing():
-#   print("Measuring download speed...")
-#   download = st.download()
-#   print(f"Download speed: {download / 1_000_000:.2f} Mbps") 
-
-#   print("Measuring upload speed...")
-#   upload = st.upload()
-#   print(f"Upload speed: {upload / 1_000_000:.2f} Mbps")
-
-# # print(today)
-# # speed_testing()
-
-# with open("speed_log.txt", "a") as file:
-#   file.write(f"{today} {speed_testing()}\n")
-
-
-
 import speedtest
 import datetime
 import time
-import schedule
+import csv
+import os
 
+# Initialize Speedtest
 st = speedtest.Speedtest()
 
+# Function to perform speed test and log data to CSV
 def speed_testing():
-    today = datetime.datetime.now().strftime("[%d/%m/%Y/%H:%M:%S]")
-    print("Measuring download speed...")
-    download = st.download()
-    download_speed = f"Download speed: {download / 1_000_000:.2f} Mbps"
-    print(download_speed)
+    today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"Measuring internet speed at {today}...")
 
-    print("Measuring upload speed...")
-    upload = st.upload()
-    upload_speed = f"Upload speed: {upload / 1_000_000:.2f} Mbps"
-    print(upload_speed)
+    # Measure download and upload speeds
+    download = st.download() / 1_000_000  # Convert to Mbps
+    upload = st.upload() / 1_000_000  # Convert to Mbps
 
-    # Return speeds as a string
-    # return f"{download_speed}\n{upload_speed}"
+    download_speed = f"{download:.2f}"
+    upload_speed = f"{upload:.2f}"
 
-# Save the output to speed_log.txt
-    with open("speed_log.txt", "a") as file:
-     file.write(f"{today}\n{download_speed}\n{upload_speed}\n")
+    # Print speeds to the console
+    print(f"Download Speed: {download_speed} Mbps")
+    print(f"Upload Speed: {upload_speed} Mbps")
 
-schedule.every().sunday.at("09:15").do(speed_testing)
-schedule.every().monday.at("09:15").do(speed_testing)
-schedule.every().tuesday.at("09:15").do(speed_testing) 
-schedule.every().wednesday.at("09:15").do(speed_testing)
+    # Log the results into a CSV file
+    log_speed_to_csv(today, download_speed, upload_speed)
 
+# Function to log the speed test results into a CSV file
+def log_speed_to_csv(timestamp, download_speed, upload_speed):
+    # Define CSV file path
+    csv_file = "internet_speed.csv"
 
+    # Check if the file exists
+    file_exists = os.path.exists(csv_file)
 
-while True: 
-    schedule.run_pending()
-    time.sleep(1)
+    # Open the CSV file and write the data
+    with open(csv_file, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        
+        # Write header if the file does not exist
+        if not file_exists:
+            writer.writerow(["Timestamp", "Download Speed (Mbps)", "Upload Speed (Mbps)"])
+        
+        # Write the current speed data
+        writer.writerow([timestamp, download_speed, upload_speed])
+
+# Main script to run the speed test every 5 minutes
+def main():
+    while True:
+        # Perform the speed test and log the data
+        speed_testing()
+
+        # Wait for 5 minutes (300 seconds) before the next test
+        time.sleep(300)  # Sleep for 5 minutes
+
+# Run the script
+if __name__ == "__main__":
+    main()

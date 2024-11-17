@@ -48,44 +48,61 @@ def birthday_celebration(name, age):
     print("-" * 40)
 
 # Main script to find birthdays and trigger celebration
-today = datetime.datetime.now()
-today_day = today.day
-today_month = today.month
-current_year = today.year
-birthday_found = False
+def check_birthdays():
+    today = datetime.datetime.now()
+    today_day = today.day
+    today_month = today.month
+    current_year = today.year
+    birthday_found = False
 
-today_formatted = f"{today_day:02d}.{today_month:02d}"
+    today_formatted = f"{today_day:02d}.{today_month:02d}"
 
-with open("names.txt", 'r') as file:
-    for line in file:
-        parts = line.split(',')
-        
-        if len(parts) == 4:
-            name = parts[0].strip()
-            birthdate_str = parts[-1].strip()
+    with open("names.txt", 'r') as file:
+        for line in file:
+            parts = line.split(',')
             
-            try:
-                birthdate_parts = birthdate_str.split(".")
-                birthdate_day = int(birthdate_parts[0])
-                birthdate_month = int(birthdate_parts[1])
-                birthdate_year = int(birthdate_parts[2])
-                birthdate_formatted = f"{birthdate_day:02d}.{birthdate_month:02d}"
+            if len(parts) == 4:
+                name = parts[0].strip()
+                birthdate_str = parts[-1].strip()
+                
+                try:
+                    birthdate_parts = birthdate_str.split(".")
+                    birthdate_day = int(birthdate_parts[0])
+                    birthdate_month = int(birthdate_parts[1])
+                    birthdate_year = int(birthdate_parts[2])
+                    birthdate_formatted = f"{birthdate_day:02d}.{birthdate_month:02d}"
 
-                if birthdate_formatted == today_formatted:
-                    # Calculate age
-                    age = current_year - birthdate_year
-                    if today_month < birthdate_month or (today_month == birthdate_month and today_day < birthdate_day):
-                        age -= 1  # Adjust for birthdays later in the year
+                    if birthdate_formatted == today_formatted:
+                        # Calculate age
+                        age = current_year - birthdate_year
+                        if today_month < birthdate_month or (today_month == birthdate_month and today_day < birthdate_day):
+                            age -= 1  # Adjust for birthdays later in the year
 
-                    print(f"Today is {name}'s Birthday!")
-                    print(f'Happy birthday {name}')
-                    birthday_found = True
+                        print(f"Today is {name}'s Birthday!")
+                        print(f'Happy birthday {name}')
+                        birthday_found = True
 
-                    # Trigger the celebration script
-                    birthday_celebration(name, age)
-            except ValueError:
-                continue
+                        # Trigger the celebration script
+                        birthday_celebration(name, age)
+                except ValueError:
+                    continue
 
-# If no birthdays were found, print a message
-if not birthday_found:
-    print("No birthdays today.")
+    # If no birthdays were found, print a message
+    if not birthday_found:
+        print("No birthdays today.")
+
+# Check birthdays once every day at a specific time (e.g., 09:15)
+def run_daily_check():
+    while True:
+        now = datetime.datetime.now()
+
+        # Run the check only if it's 09:15 AM today
+        if now.hour == 9 and now.minute == 15:
+            check_birthdays()
+            break  # Stop the script after the check is completed
+
+        # Wait for 60 seconds before checking again
+        time.sleep(60)
+
+# Run the birthday check every day at 09:15
+run_daily_check()
