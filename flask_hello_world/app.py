@@ -1,19 +1,33 @@
-from flask import Flask
+from flask import Flask, request, render_template
+import requests
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return "Hello, World!"
+    pokemon_data = None
+    error_message = None
 
-@app.route('/greet/<name>')
-def greet(name):
-    return f"Hello, {name}!"
+    if request.method == "POST":
+        name_or_id = request.form.get("name_or_id").lower()
+        url = f"https://pokeapi.co/api/v2/pokemon/{name_or_id}"
 
-@app.route('/about')
-def about():
-    return "This is a simple Flask web app that greets users."
+        try:
+            response = requests.get(url)
+            response.raise_for_status()  # Ensure the response is valid
+            data = response.json()
+
+            pokemon_data = {
+                "name": data["name"].capitalize(),
+                "image": data["sprites"]["front_default"],
+                "types": [t["type"]["name"] for t in data["types"]],
+                "abilities": [a["ability"]["name"] for a in data["abilities"]],
+                "stats": {s["stat"]["name"]: s["base_stat"] for s in data["stats"]},
+            }
+        except requests.exceptions.RequestException as e:
+            error_message = f"Pokémon not found! Please try another name or ID. Error: {e}"
+
+    return render_template("home.html", pokemon=pokemon_data, error=error_message)
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000)
-
+    app.run(debug=True)
