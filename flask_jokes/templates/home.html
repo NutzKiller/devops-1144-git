@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Jokes App</title>
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="home-container">
+        <h1>Welcome to the Flask Jokes App!</h1>
+        <p>Visit <a href="/joke">/joke</a> to get a random joke.</p>
+    </div>
+</body>
+</html>
