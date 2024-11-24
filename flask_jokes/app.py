@@ -14,9 +14,11 @@ def joke():
     response = requests.get('https://official-joke-api.appspot.com/random_joke')
     if response.status_code == 200:
         joke_data = response.json()
-        return render_template('joke.html', joke=f"{joke_data['setup']} - {joke_data['punchline']}")
+        return render_template('joke.html', joke=f"Here's a new joke: {joke_data['setup']} - {joke_data['punchline']}")
     else:
-        return "Error: Couldn't fetch a joke.", 500
+        return "Oops! Couldn't fetch a joke.", 500
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
+
