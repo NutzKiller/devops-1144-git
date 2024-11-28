@@ -1,0 +1,25 @@
+#version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongodb_container
+    ports:
+      - "27017:27017"  # Expose MongoDB
+    volumes:
+      - mongo-data:/data/db  # Persist data
+
+  web:
+    build:
+      context: .  # Build Flask app from current directory
+    container_name: flask_container
+    command: python app.py
+    ports:
+      - "5000:5000"  # Expose Flask app
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/meme_db  # Use the MongoDB service name as the hostname
+    depends_on:
+      - mongo  # Ensure Mongo starts before Flask app
+
+volumes:
+  mongo-data: 
