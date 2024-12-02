@@ -1,0 +1,190 @@
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, #ff7043, #ff3d00); /* Vibrant orange gradient */
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+/* Header styling */
+h1, h2 {
+  color: #fff;
+  text-shadow: 3px 3px 15px rgba(0, 0, 0, 0.4);
+  font-weight: 600;
+}
+
+/* Homepage styling */
+.homepage {
+  margin-top: 50px;
+}
+
+.homepage h1 {
+  font-size: 4.5em;
+  margin-bottom: 30px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  animation: fadeIn 2s ease-out;
+}
+
+.homepage a {
+  display: inline-block;
+  font-size: 2.2em;
+  padding: 20px 40px;
+  background: #ff5722; /* Bold orange button */
+  color: #fff;
+  text-decoration: none;
+  border-radius: 50px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.homepage a:hover {
+  background: #ff3d00; /* Darker orange hover */
+  transform: scale(1.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Today's Birthdays Styling */
+.today-page {
+  padding: 40px;
+  background: linear-gradient(135deg, #ff5722, #ff3d00); /* Orange gradient */
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  max-width: 1000px;
+  width: 90%;
+  margin: 20px auto;
+  animation: slideIn 0.8s ease-out;
+}
+
+.today-page h1 {
+  font-size: 3.5em;
+  margin-bottom: 50px;
+  color: #fff;
+  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
+  letter-spacing: 5px;
+}
+
+.today-page ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.today-page li {
+  background-color: rgba(0, 0, 0, 0.6); /* Darker background for list items */
+  margin: 20px 0;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transform: scale(1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.today-page li:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+}
+
+.today-page li strong {
+  font-size: 2.2em;
+  color: #ffeb3b; /* Vibrant yellow for contrast */
+}
+
+.today-page ul ul {
+  margin-top: 20px;
+  padding-left: 25px;
+}
+
+.today-page ul ul li {
+  background-color: rgba(255, 255, 255, 0.3); /* Light background for messages */
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 1.3em;
+  color: #ff9800; /* Bright orange for nested messages */
+  font-style: italic;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.today-page a {
+  display: inline-block;
+  margin-top: 40px;
+  padding: 18px 45px;
+  background: #ff5722;
+  color: white;
+  font-size: 1.6em;
+  border-radius: 25px;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.today-page a:hover {
+  background: #ff3d00;
+  transform: scale(1.1);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Animation for Text */
+@keyframes fadeIn {
+  0% {
+      opacity: 0;
+      transform: translateY(50px);
+  }
+  100% {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+/* Slide In Animation */
+@keyframes slideIn {
+  0% {
+      opacity: 0;
+      transform: translateY(50px);
+  }
+  100% {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .homepage h1 {
+      font-size: 2.8em;
+  }
+
+  .homepage a {
+      font-size: 1.5em;
+      padding: 15px 30px;
+  }
+
+  .today-page h1 {
+      font-size: 2.8em;
+  }
+
+  .today-page li {
+      padding: 25px;
+  }
+
+  .today-page a {
+      font-size: 1.3em;
+      padding: 15px 40px;
+  }
+}
