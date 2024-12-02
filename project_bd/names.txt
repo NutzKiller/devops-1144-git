@@ -1,19 +1,18 @@
-Amit levy, amit122464@gmail.com, +972507701598, 18.7.2002
-Avichay Har-Tuv, avichay.hartuv@gmail.com, +972544929938 11.12.1982
-Gabi Delcea, Vioriiiee@gmail.com, +972528876654 11.12.2003
-Yuval Shmuely, yuvalshmuely8@gmail.com, +972503773305, 1.08.2000 
-Denis Kovner, deniskovner5@gmail.com, +972523435729, 29.04.2003
-Amitay Almog, amitay.almog@gmail.com, +972504446684, 03.10.2002
-Daniel Miroshnichenko, danikmirosh@gmail.com, +972525051980, 
-Omri Fialkov, omrikofialkov@gmail.com, +972526186331, 29.10.2002
-Liron Mizrahi, lironlk19@gmail.com, +972525016437, 02.12.1999
-Shasha Fefler, sasha.fefler@gmail.com, +972522236749, 13.11.2003
-Rom Liani, lianirom30@gmail.com, +97245200230 13.12.2004
-nimrod benaim, nimrodbenaim@gmail.com, +972558861772, 4.11.2002
-Ariel ksenzovsky, a.ksenzovsky@gmail.com, +972546743535, 25.11.2001
-Moshe Lederman, mos9972@gmail.com, +972509344899, 10.05.1995
-Ofek Masas, ofekmasaspro@gmail.com, +972545274353, 27.04.2000
-Orel Neto, orelnetodo@gmail.com, +972546374627, 22.10.1999
-shira chen, shirac432@gmail.com, +97285732232, 16.01.2004
-oren balachnes, orenbal1611@gmail.com, +972522618416, 16.11.2002
-
+Amit Levy,,, 18.7.2002  
+Avichay Har-Tuv,,, 11.12.1982  
+Gabi Delcea,,, 11.12.2003  
+Yuval Shmuely,,, 1.08.2000  
+Denis Kovner,,, 29.04.2003  
+Amitay Almog,,, 03.10.2002  
+Daniel Miroshnichenko,,,01.01.2000  
+Omri Fialkov, ,,29.10.2002  
+Liron Mizrahi,,, 02.12.1999  
+Shasha Fefler, ,,13.11.2003  
+Rom Liani, ,,13.12.2004  
+Nimrod Benaim,,, 4.11.2002  
+Ariel Ksenzovsky,,, 25.11.2001  
+Moshe Lederman, ,,10.05.1995  
+Ofek Masas, ,,27.04.2000  
+Orel Neto, ,,22.10.1999  
+Shira Chen, ,,16.01.2004  
+Oren Balachnes, ,,16.11.2002  
