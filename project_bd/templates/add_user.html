@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New User</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container add-user-page">
+        <h1>Add New User</h1>
+
+        <form action="/add_user" method="POST">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required><br><br>
+
+            <label for="birthdate">Birthdate (DD.MM.YYYY):</label>
+            <input type="text" id="birthdate" name="birthdate" required><br><br>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email"><br><br>
+
+            <label for="phone">Phone:</label>
+            <input type="text" id="phone" name="phone"><br><br>
+
+            <button type="submit">Add User</button>
+        </form>
+
+        <br>
+        <a href="/">
+            <button class="back-home-btn">Back to Home</button>
+        </a>
+    </div>
