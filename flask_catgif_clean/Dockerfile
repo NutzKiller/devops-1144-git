@@ -1,15 +1,23 @@
-FROM python:3.10-slim
+# Use a Python base image
+FROM python:3.9-slim
 
-# Install necessary packages
-RUN pip install flask requests
-
-# Copy the application files
-COPY . /app
-
+# Set the working directory in the container
 WORKDIR /app
 
-# Expose the port the app runs on
+# Copy the requirements.txt file into the container
+COPY requirements.txt requirements.txt
+
+# Install dependencies
+RUN pip install -r requirements.txt
+
+# Copy the rest of the application code into the container
+COPY . .
+
+# Set the environment variable for Flask to run in production
+ENV FLASK_APP=app.py
+
+# Expose port 5000
 EXPOSE 5000
 
-# Run the Flask app
-CMD ["python", "app.py"]
+# Run the Flask application
+CMD ["flask", "run", "--host", "0.0.0.0", "--port", "5000"]
