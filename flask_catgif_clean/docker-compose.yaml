@@ -6,12 +6,22 @@ services:
       - "5000:5000"
     depends_on:
       - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=root_password
+      - DB_NAME=catgifs
+
   db:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: root_password  # Set the MySQL root password here
-      MYSQL_DATABASE: catgifs  # The database name to use
-      MYSQL_USER: user  # MySQL user
-      MYSQL_PASSWORD: password  # MySQL user password
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}  # Root password
+      MYSQL_DATABASE: ${DB_NAME}  # The database to be created
     ports:
       - "3306:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount init.sql
+      - mysql-data:/var/lib/mysql  # Persist MySQL data
+
+volumes:
+  mysql-data:  # Declare a named volume for MySQL data
