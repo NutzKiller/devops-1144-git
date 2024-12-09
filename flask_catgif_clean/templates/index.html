@@ -7,15 +7,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Random Cat GIF</h1>
+    <h1>Random Dog Photo</h1>
     
     {% if gif_url %}
-        <img src="{{ gif_url }}" alt="Random Cat GIF" />
+        <img id="gifImage" src="{{ gif_url }}" alt="Random Cat GIF" />
     {% else %}
         <p>Sorry, no GIF found!</p>
     {% endif %}
     
-    <br>
+    <p>Total Visitors: {{ visitor_count }}</p>
+    
     <button onclick="loadNewGif()">Get New GIF</button>
 
     <script>
@@ -23,8 +24,11 @@
             fetch('/new_gif')
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);  // Check if the response has the correct URL
-                    document.querySelector('img').src = data.new_gif_url;
+                    if (data.new_gif_url) {
+                        document.getElementById('gifImage').src = data.new_gif_url;
+                    } else {
+                        alert('Failed to fetch new GIF.');
+                    }
                 });
         }
     </script>

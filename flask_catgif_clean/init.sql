@@ -15,3 +15,10 @@ INSERT INTO images (url) VALUES
 ("https://images.dog.ceo/breeds/beagle/n02088364_1128.jpg"),
 ("https://images.dog.ceo/breeds/pekinese/n02086079_4412.jpg"),
 ("https://images.dog.ceo/breeds/spaniel-welsh/n02102177_2055.jpg");
+
+CREATE TABLE IF NOT EXISTS visitors (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    count INT NOT NULL
+);
+
+INSERT INTO visitors (id, count) VALUES (1, 0) ON DUPLICATE KEY UPDATE count = count;
