@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Learning Platform</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Python Home - DevOps</title>
+        <!-- Link to the CSS file in the 'static' folder -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Welcome to DevOps Learning Platform</h1>
+    <p>Visitor count: {{ visitor_count }}</p>
+
+    <h2>Topics:</h2>
+    <ul>
+        <li><a href="{{ url_for('linux_index') }}">Linux</a></li>
+        <li><a href="{{ url_for('sql_index') }}">SQL</a></li>
+        <li><a href="{{ url_for('bash_index') }}">Bash</a></li>
+        <li><a href="{{ url_for('python_index') }}">Python</a></li>
+        <li><a href="{{ url_for('git_index') }}">Git</a></li>
+        <li><a href="{{ url_for('github_index') }}">GitHub</a></li>
+        <li><a href="{{ url_for('docker_index') }}">Docker</a></li>
+        <li><a href="{{ url_for('ansible_index') }}">Ansible</a></li>
+    </ul>
+</body>
+</html>

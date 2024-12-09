@@ -1,0 +1,156 @@
+/* Reset some default styles to ensure uniformity across browsers */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* General body styling */
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #f4f4f4;
+  color: #333;
+  padding: 20px;
+}
+
+/* Main container styling */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Header styles */
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Styling for page titles (for example: "Python Home", "Docker Home") */
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #007bff;
+}
+
+/* Links style */
+a {
+  text-decoration: none;
+  color: #007bff;
+  font-size: 1.2rem;
+}
+
+/* Hover effect for links */
+a:hover {
+  text-decoration: underline;
+}
+
+/* List styles */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Styling for each list item */
+li {
+  margin: 10px 0;
+}
+
+/* Return button */
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Form controls like input fields and buttons */
+input, select, textarea, button {
+  font-size: 1rem;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+/* Styling for the return button on each page */
+.return-btn {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Additional styling for individual pages (learning, test, etc.) */
+.page-content {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* For learning pages - add a bit more padding */
+.learning-content {
+  padding: 20px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* For test pages - styling for quiz-like structure */
+.test-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.test-content label {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.test-content input[type="radio"] {
+  margin-right: 10px;
+}
+
+/* For questions pages - question list */
+.questions-content ul {
+  list-style-type: decimal;
+  padding-left: 20px;
+}
+
+/* Add a subtle hover effect to the question items */
+.questions-content li:hover {
+  background-color: #e9e9e9;
+}
+
+/* Styling for the footer */
+footer {
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 50px;
+  background-color: #007bff;
+  color: white;
+  font-size: 1rem;
+  border-radius: 5px;
+}
+
+footer a {
+  color: white;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
