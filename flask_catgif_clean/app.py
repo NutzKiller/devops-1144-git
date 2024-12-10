@@ -61,6 +61,11 @@ def new_gif():
     gif_url = get_random_gif()  # Fetch another random GIF
     return jsonify({'new_gif_url': gif_url})
 
+@app.route('/visitor_count')
+def visitor_count():
+    count = get_visitor_count()  # Get the current visitor count
+    return jsonify({'visitor_count': count})
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))  # Default to 5000 if PORT is not set
     app.run(host="0.0.0.0", port=port)

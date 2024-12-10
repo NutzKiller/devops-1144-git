@@ -1,7 +1,8 @@
 version: "3.9"
+
 services:
   flask_app:
-    build: .
+    image: nutzkiller/flask_catgif
     ports:
       - "${PORT}:5000"  # Map the host PORT (from .env) to container's port 5000
     depends_on:
@@ -12,6 +13,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
       - PORT=${PORT}  # Pass the PORT variable to the container
+    restart: unless-stopped  # Automatically restart the app unless manually stopped
 
   db:
     image: mysql:8.0
@@ -19,10 +21,17 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}  # Root password
       MYSQL_DATABASE: ${DB_NAME}  # The database to be created
     ports:
-      - "3306:3306"
+      - "3306:3306"  # Expose MySQL port for local development, but remove it if not needed
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount init.sql
       - mysql-data:/var/lib/mysql  # Persist MySQL data
+    restart: unless-stopped  # Automatically restart the DB container unless manually stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 30s
+      retries: 5
+      start_period: 30s
+      timeout: 30s
 
 volumes:
   mysql-data:  # Declare a named volume for MySQL data
