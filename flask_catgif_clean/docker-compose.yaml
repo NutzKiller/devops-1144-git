@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   flask_app:
-    image: nutzkiller/flask_catgif
+    image: nutzkiller/flask_catgif_clean:latest
     ports:
       - "${PORT}:5000"  # Map the host PORT (from .env) to container's port 5000
     depends_on:

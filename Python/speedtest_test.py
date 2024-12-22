@@ -46,14 +46,8 @@ def log_speed_to_csv(timestamp, download_speed, upload_speed):
         writer.writerow([timestamp, download_speed, upload_speed])
 
 # Main script to run the speed test every 5 minutes
-def main():
-    while True:
-        # Perform the speed test and log the data
-        speed_testing()
 
-        # Wait for 5 minutes (300 seconds) before the next test
-        time.sleep(300)  # Sleep for 5 minutes
 
 # Run the script
 if __name__ == "__main__":
-    main()
+    speed_testing()

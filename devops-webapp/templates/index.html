@@ -4,26 +4,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevOps Learning Platform</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Python Home - DevOps</title>
-        <!-- Link to the CSS file in the 'static' folder -->
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Welcome to DevOps Learning Platform</h1>
-    <p>Visitor count: {{ visitor_count }}</p>
+    <header>
+        <h1>Welcome to DevOps Learning Platform</h1>
+        <nav>
+            <ul class="navbar">
+                <li><a href="{{ url_for('linux_index') }}">Linux</a></li>
+                <li><a href="{{ url_for('sql_index') }}">SQL</a></li>
+                <li><a href="{{ url_for('bash_index') }}">Bash</a></li>
+                <li><a href="{{ url_for('python_index') }}">Python</a></li>
+                <li><a href="{{ url_for('git_index') }}">Git</a></li>
+                <li><a href="{{ url_for('github_index') }}">GitHub</a></li>
+                <li><a href="{{ url_for('docker_index') }}">Docker</a></li>
+                <li><a href="{{ url_for('ansible_index') }}">Ansible</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <h2>Topics:</h2>
-    <ul>
-        <li><a href="{{ url_for('linux_index') }}">Linux</a></li>
-        <li><a href="{{ url_for('sql_index') }}">SQL</a></li>
-        <li><a href="{{ url_for('bash_index') }}">Bash</a></li>
-        <li><a href="{{ url_for('python_index') }}">Python</a></li>
-        <li><a href="{{ url_for('git_index') }}">Git</a></li>
-        <li><a href="{{ url_for('github_index') }}">GitHub</a></li>
-        <li><a href="{{ url_for('docker_index') }}">Docker</a></li>
-        <li><a href="{{ url_for('ansible_index') }}">Ansible</a></li>
-    </ul>
+    <main>
+        <h2>Topics:</h2>
+        <div class="main-content">
+            <!-- Sidebar for buttons -->
+            <div class="sidebar">
+                <!-- Linux -->
+                <button class="button-link" id="linux-toggle">Linux</button>
+                <div class="dropdown-content" id="linux-content">
+                    <p><a href="{{ url_for('linux_learning') }}">Learning</a></p>
+                    <p><a href="{{ url_for('linux_questions') }}">Questions</a></p>
+                    <p><a href="{{ url_for('linux_test') }}">Test</a></p>
+                </div>
+
+                <!-- SQL -->
+                <button class="button-link" id="sql-toggle">SQL</button>
+                <div class="dropdown-content" id="sql-content">
+                    <p><a href="{{ url_for('sql_learning') }}">Learning</a></p>
+                    <p><a href="{{ url_for('sql_questions') }}">Questions</a></p>
+                    <p><a href="{{ url_for('sql_test') }}">Test</a></p>
+                </div>
+
+                <!-- Bash -->
+                <button class="button-link" id="bash-toggle">Bash</button>
+                <div class="dropdown-content" id="bash-content">
+                    <p><a href="{{ url_for('bash_learning') }}">Learning</a></p>
+                    <p><a href="{{ url_for('bash_questions') }}">Questions</a></p>
+                    <p><a href="{{ url_for('bash_test') }}">Test</a></p>
+                </div>
+
+                <!-- Python -->
+                <button class="button-link" id="python-toggle">Python</button>
+                <div class="dropdown-content" id="python-content">
+                    <p><a href="{{ url_for('python_learning') }}">Learning</a></p>
+                    <p><a href="{{ url_for('python_questions') }}">Questions</a></p>
+                    <p><a href="{{ url_for('python_test') }}">Test</a></p>
+                </div>
+
+                <!-- Git -->
+                <button class="button-link" id="git-toggle">Git</button>
+                <div class="dropdown-content" id="git-content">
+                    <p><a href="{{ url_for('git_learning') }}">Learning</a></p>
+                    <p><a href="{{ url_for('git_questions') }}">Questions</a></p>
+                    <p><a href="{{ url_for('git_test') }}">Test</a></p>
+                </div>
+
+                <!-- GitHub -->
+                <button class="button-link" id="github-toggle">GitHub</button>
+                <div class="dropdown-content" id="github-content">
+                    <p><a href="{{ url_for('github_learning') }}">Learning</a></p>
+                    <p><a href="{{ url_for('github_questions') }}">Questions</a></p>
+                    <p><a href="{{ url_for('github_test') }}">Test</a></p>
+                </div>
+
+                <!-- Docker -->
+                <button class="button-link" id="docker-toggle">Docker</button>
+                <div class="dropdown-content" id="docker-content">
+                    <p><a href="{{ url_for('docker_learning') }}">Learning</a></p>
+                    <p><a href="{{ url_for('docker_questions') }}">Questions</a></p>
+                    <p><a href="{{ url_for('docker_test') }}">Test</a></p>
+                </div>
+
+                <!-- Ansible -->
+                <button class="button-link" id="ansible-toggle">Ansible</button>
+                <div class="dropdown-content" id="ansible-content">
+                    <p><a href="{{ url_for('ansible_learning') }}">Learning</a></p>
+                    <p><a href="{{ url_for('ansible_questions') }}">Questions</a></p>
+                    <p><a href="{{ url_for('ansible_test') }}">Test</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 DevOps Learning Platform. All rights reserved.</p>
+        <p>Visitor count: {{ visitor_count }}</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.button-link');
+            buttons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const topicName = button.id.replace('-toggle', '');
+                    const contentDiv = document.getElementById(`${topicName}-content`);
+
+                    // Toggle visibility
+                    if (contentDiv.style.display === 'block') {
+                        contentDiv.style.display = 'none';
+                    } else {
+                        // Hide other open dropdowns
+                        document.querySelectorAll('.dropdown-content').forEach(div => {
+                            div.style.display = 'none';
+                        });
+
+                        contentDiv.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,156 +1,206 @@
-/* Reset some default styles to ensure uniformity across browsers */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 /* General body styling */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', Arial, sans-serif;
   line-height: 1.6;
-  background-color: #f4f4f4;
+  background-color: #f8f9fa;
   color: #333;
-  padding: 20px;
-}
-
-/* Main container styling */
-main {
-  max-width: 1200px;
-  margin: 0 auto;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin: 0;
 }
 
 /* Header styles */
 header {
+  background-color: #ec5252;
+  color: white;
+  padding: 50px 20px;
+  border-radius: 0 0 20px 20px;
   text-align: center;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+header p {
+  font-size: 1.3rem;
   margin-bottom: 30px;
 }
 
-/* Styling for page titles (for example: "Python Home", "Docker Home") */
-h1 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  color: #007bff;
+/* Navbar styling */
+nav {
+  background-color: #343a40;
+  padding: 15px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Links style */
-a {
-  text-decoration: none;
-  color: #007bff;
-  font-size: 1.2rem;
-}
-
-/* Hover effect for links */
-a:hover {
-  text-decoration: underline;
-}
-
-/* List styles */
-ul {
-  list-style-type: none;
+.navbar {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  margin: 0;
   padding: 0;
 }
 
-/* Styling for each list item */
-li {
-  margin: 10px 0;
+.navbar li {
+  margin: 0 20px;
 }
 
-/* Return button */
-button {
-  background-color: #007bff;
+.navbar a {
+  text-decoration: none;
   color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: color 0.3s;
 }
 
-button:hover {
-  background-color: #0056b3;
+.navbar a:hover {
+  color: #ec5252;
 }
 
-/* Form controls like input fields and buttons */
-input, select, textarea, button {
-  font-size: 1rem;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  width: 100%;
-}
-
-/* Styling for the return button on each page */
-.return-btn {
-  display: block;
-  margin-top: 20px;
-  text-align: center;
-}
-
-/* Additional styling for individual pages (learning, test, etc.) */
-.page-content {
-  font-size: 1.1rem;
-  line-height: 1.6;
-}
-
-/* For learning pages - add a bit more padding */
-.learning-content {
+/* Main container */
+main {
+  display: flex;
   padding: 20px;
-  background-color: #fafafa;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* For test pages - styling for quiz-like structure */
-.test-content {
+/* Sidebar for buttons */
+.sidebar {
+  width: 250px;
   background-color: #fff;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-right: 20px;
+  position: relative;
 }
 
-.test-content label {
-  font-size: 1.1rem;
-  margin-bottom: 5px;
+/* Button container inside the sidebar */
+.button-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar form {
+  margin-bottom: 15px;
+}
+
+.sidebar button {
   display: block;
+  width: 100%;
+  background-color: #ec5252;
+  color: white;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
 
-.test-content input[type="radio"] {
-  margin-right: 10px;
+.sidebar button:hover {
+  background-color: #d92f2f;
+  transform: translateY(-3px);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* For questions pages - question list */
-.questions-content ul {
-  list-style-type: decimal;
-  padding-left: 20px;
+/* Topic content styling */
+.topic-content {
+  display: none; /* Initially hidden */
+  flex-grow: 1;
+  background-color: #fff;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  margin-left: 20px; /* Space between sidebar and content */
+  position: relative;
 }
 
-/* Add a subtle hover effect to the question items */
-.questions-content li:hover {
-  background-color: #e9e9e9;
+.topic-content a {
+  color: #ec5252;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: color 0.3s;
 }
 
-/* Styling for the footer */
+.topic-content a:hover {
+  color: #d92f2f;
+}
+
+/* Footer styles */
 footer {
-  text-align: center;
-  padding: 20px 0;
-  margin-top: 50px;
-  background-color: #007bff;
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #333;
   color: white;
-  font-size: 1rem;
-  border-radius: 5px;
+  text-align: center;
+  font-size: 0.9rem;
+  border-radius: 10px 10px 0 0;
 }
 
-footer a {
-  color: white;
+footer p {
+  margin: 0;
+}
+
+footer p a {
+  color: #ec5252;
   text-decoration: none;
 }
 
-footer a:hover {
+footer p a:hover {
   text-decoration: underline;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 2.5rem;
+  }
+
+  header p {
+    font-size: 1.2rem;
+  }
+
+  .sidebar {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+
+  main {
+    flex-direction: column;
+  }
+
+  .button-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+/* Dropdown content styles */
+.dropdown-content {
+  display: none;
+  background-color: #fff;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.dropdown-content p {
+  margin: 10px 0;
+}
+
+.dropdown-content a {
+  color: #ec5252;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.dropdown-content a:hover {
+  color: #d92f2f;
 }
