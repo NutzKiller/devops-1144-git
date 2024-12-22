@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template, jsonify
 import mysql.connector
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
 # Read database configuration from environment variables
 DB_CONFIG = {
