@@ -25,6 +25,7 @@ def increment_visitor_counter():
 
 
 
+
 # Get the current visitor count
 def get_visitor_count():
     try:
