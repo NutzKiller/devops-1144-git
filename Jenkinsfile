@@ -26,14 +26,15 @@ pipeline {
                     sh 'rm -rf devops-1144-git'
                     sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
 
-                    // Export Jenkins secrets to environment variables
+                    // Extract values from the secret and set them as environment variables
                     sh '''
-                    export PORT=${PORT}
-                    export DB_HOST=${DB_HOST}
-                    export DB_USER=${DB_USER}
-                    export DB_PASSWORD=${DB_PASSWORD}
-                    export DB_NAME=${DB_NAME}
-                    
+                    # Split the secret into individual variables
+                    echo "$FLASK_ENV" | sed 's/DB_HOST=\([^ ]*\)/DB_HOST=\1/' > .env
+                    echo "$FLASK_ENV" | sed 's/DB_USER=\([^ ]*\)/DB_USER=\1/' >> .env
+                    echo "$FLASK_ENV" | sed 's/DB_PASSWORD=\([^ ]*\)/DB_PASSWORD=\1/' >> .env
+                    echo "$FLASK_ENV" | sed 's/DB_NAME=\([^ ]*\)/DB_NAME=\1/' >> .env
+                    echo "$FLASK_ENV" | sed 's/PORT=\([^ ]*\)/PORT=\1/' >> .env
+
                     # Build the Docker images using the environment variables
                     cd devops-1144-git/flask_catgif_clean
                     docker-compose build
