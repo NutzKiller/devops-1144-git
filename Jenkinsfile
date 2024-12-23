@@ -22,27 +22,30 @@ pipeline {
                     sh 'rm -rf devops-1144-git'
                     sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
 
-                    // Use withCredentials to inject secrets as environment variables
-                    withCredentials([string(credentialsId: 'PORT', variable: 'PORT'),
-                                      string(credentialsId: 'DB_HOST', variable: 'DB_HOST'),
-                                      string(credentialsId: 'DB_USER', variable: 'DB_USER'),
-                                      string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
-                                      string(credentialsId: 'DB_NAME', variable: 'DB_NAME')]) {
+                    // Use withCredentials to inject 'flask_env' secret as environment variables
+                    withCredentials([string(credentialsId: 'flask_env', variable: 'FLASK_ENV')]) {
+                        // Split the FLASK_ENV string and set each environment variable
+                        def envVars = FLASK_ENV.split('\n')
+                        envVars.each { line ->
+                            def (key, value) = line.split('=')
+                            env[key] = value  // Set the environment variables for Docker Compose
+                        }
+
                         // Print out the environment variables (optional, for debugging)
-                        echo "PORT: ${PORT}"
-                        echo "DB_HOST: ${DB_HOST}"
-                        echo "DB_USER: ${DB_USER}"
-                        echo "DB_PASSWORD: ${DB_PASSWORD}"
-                        echo "DB_NAME: ${DB_NAME}"
+                        echo "PORT: ${env.PORT}"
+                        echo "DB_HOST: ${env.DB_HOST}"
+                        echo "DB_USER: ${env.DB_USER}"
+                        echo "DB_PASSWORD: ${env.DB_PASSWORD}"
+                        echo "DB_NAME: ${env.DB_NAME}"
 
                         // Create .env file for Docker Compose with secrets
                         sh """
                         cd devops-1144-git/flask_catgif_clean
-                        echo "PORT=${PORT}" >> .env
-                        echo "DB_HOST=${DB_HOST}" >> .env
-                        echo "DB_USER=${DB_USER}" >> .env
-                        echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
-                        echo "DB_NAME=${DB_NAME}" >> .env
+                        echo "PORT=${env.PORT}" >> .env
+                        echo "DB_HOST=${env.DB_HOST}" >> .env
+                        echo "DB_USER=${env.DB_USER}" >> .env
+                        echo "DB_PASSWORD=${env.DB_PASSWORD}" >> .env
+                        echo "DB_NAME=${env.DB_NAME}" >> .env
                         docker-compose build
                         """
                     }
@@ -70,7 +73,7 @@ pipeline {
 
                     // Test if the app is running
                     sh '''
-                    if ! curl -f http://localhost:${PORT}; then
+                    if ! curl -f http://localhost:${env.PORT}; then
                         echo "App is not reachable."
                         docker logs flask_catgif_clean_flask_app
                         exit 1
