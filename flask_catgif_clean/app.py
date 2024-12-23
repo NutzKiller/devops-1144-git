@@ -24,7 +24,6 @@ def increment_visitor_counter():
         print(f"Database error: {err}")
 
 
-
 # Get the current visitor count
 def get_visitor_count():
     try:
