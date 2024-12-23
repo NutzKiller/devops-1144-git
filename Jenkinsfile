@@ -6,12 +6,7 @@ pipeline {
     }
 
     environment {
-        // Inject secrets into environment variables
-        PORT = credentials('PORT_SECRET')
-        DB_HOST = credentials('DB_HOST_SECRET')
-        DB_USER = credentials('DB_USER_SECRET')
-        DB_PASSWORD = credentials('DB_PASSWORD_SECRET')
-        DB_NAME = credentials('DB_NAME_SECRET')
+        FLASK_ENV = credentials('flask_env')  // Use the secret named 'flask_env'
     }
 
     stages {
@@ -29,9 +24,12 @@ pipeline {
                     // Clone the repository and build Docker images
                     sh 'rm -rf devops-1144-git'
                     sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
+
+                    // Inject environment variables from the secret
                     sh '''
                     cd devops-1144-git/flask_catgif_clean
-                    PORT=${PORT} DB_HOST=${DB_HOST} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_NAME} docker-compose build
+                    echo "${FLASK_ENV}" > .env
+                    docker-compose build
                     '''
                 }
             }
@@ -42,7 +40,7 @@ pipeline {
                     // Start the containers using Docker Compose
                     sh '''
                     cd devops-1144-git/flask_catgif_clean
-                    PORT=${PORT} DB_HOST=${DB_HOST} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_NAME} docker-compose up -d
+                    docker-compose up -d
                     '''
                 }
             }
