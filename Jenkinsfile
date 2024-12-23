@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         // Use the 'flask_env' secret to inject environment variables
-        FLASK_ENV = credentials('flask_env')
+        FLASK_ENV = credentials('flask_env')  // This is injected via Jenkins secrets
     }
 
     stages {
@@ -26,14 +26,9 @@ pipeline {
                     sh 'rm -rf devops-1144-git'
                     sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
 
-                    // Inject environment variables from the 'flask_env' secret
+                    // Build the Docker images using the environment variables injected by Jenkins
                     sh '''
                     cd devops-1144-git/flask_catgif_clean
-                    echo "PORT=${PORT}" >> .env
-                    echo "DB_HOST=${DB_HOST}" >> .env
-                    echo "DB_USER=${DB_USER}" >> .env
-                    echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
-                    echo "DB_NAME=${DB_NAME}" >> .env
                     docker-compose build
                     '''
                 }
@@ -42,7 +37,7 @@ pipeline {
         stage('Run') {
             steps {
                 script {
-                    // Start the containers using Docker Compose
+                    // Start the containers using Docker Compose with the environment variables
                     sh '''
                     cd devops-1144-git/flask_catgif_clean
                     docker-compose up -d
