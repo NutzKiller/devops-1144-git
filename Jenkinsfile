@@ -24,7 +24,6 @@ pipeline {
         stage('Run') {
             steps {
                 sh '''
-                sleep 10
                 docker ps -a  # List containers to check if there's a conflict
                 docker run --rm -d -p 5000:5000 --name flask_app_container flask_app
                 docker ps  # Verify if the container is running
@@ -44,6 +43,7 @@ pipeline {
                 '''
                 // Test the app
                 sh '''
+                sleep 10
                 if ! curl -f http://localhost:5000; then
                     echo "App is not reachable."
                     docker logs flask_app_container
