@@ -23,15 +23,15 @@ pipeline {
                     sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
 
                     // Use withCredentials to inject 'flask_env' secret as environment variables
-                    withCredentials([string(credentialsId: 'flask_env', variable: 'FLASK_ENV')]) {
-                        echo "FLASK_ENV: ${FLASK_ENV}"
+                    withCredentials([string(credentialsId: 'flask_env', variable: 'flask_env')]) {
+                        echo "flask_env: ${flask_env}"
 
-                        // Split the FLASK_ENV string and set each environment variable
-                        def envVars = FLASK_ENV.split('\n')
+                        // Split the flask_env string into individual key-value pairs and set environment variables
+                        def envVars = flask_env.split('\n')
                         envVars.each { line ->
                             def (key, value) = line.split('=')
                             echo "Setting environment variable: ${key} = ${value}"
-                            env[key] = value
+                            env[key.trim()] = value.trim()  // Trim spaces
                         }
 
                         // Print out the environment variables (optional, for debugging)
