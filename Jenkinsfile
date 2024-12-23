@@ -8,53 +8,58 @@ pipeline {
     stages {
         stage('Cleanup') {
             steps {
-                sh '''
-                docker stop flask_app_container || echo "Container not running"
-                docker rm flask_app_container || echo "Container already removed"
-                '''
+                script {
+                    // Navigate to the flask_catgif_clean directory and stop/remove containers if they exist
+                    sh 'cd devops-1144-git/flask_catgif_clean && docker-compose down || echo "No containers to stop or remove"'
+                }
             }
         }
         stage('Build') {
             steps {
-                sh 'rm -rf devops-1144-git'
-                sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
-                sh 'cd devops-1144-git/flask_catgif_clean && docker build -t flask_app .'
+                script {
+                    // Clone the repository and build the Docker images using docker-compose
+                    sh 'rm -rf devops-1144-git'
+                    sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
+                    sh 'cd devops-1144-git/flask_catgif_clean && docker-compose build'
+                }
             }
         }
         stage('Run') {
             steps {
-                sh '''
-                docker ps -a  # List containers to check if there's a conflict
-                docker run --rm -d -p 5000:5000 --name flask_app_container flask_app
-                docker ps  # Verify if the container is running
-                '''
+                script {
+                    // Navigate to the flask_catgif_clean directory and start the container using docker-compose
+                    sh 'cd devops-1144-git/flask_catgif_clean && docker-compose up -d'
+                }
             }
         }
         stage('Test') {
             steps {
-                // Wait for the container to start
-                sh 'sleep 5'
-                // Check logs for errors
-                sh '''
-                if ! docker logs flask_app_container; then
-                    echo "Container logs check failed"
-                    exit 1
-                fi
-                '''
-                // Test the app
-                sh '''
-                sleep 10
-                if ! curl -f http://localhost:5000; then
-                    echo "App is not reachable."
-                    docker logs flask_app_container
-                    exit 1
-                fi
-                '''
+                script {
+                    // Wait for the container to start
+                    sh 'sleep 5'
+                    
+                    // Test if the app is running by making a request
+                    sh '''
+                    if ! curl -f http://localhost:5000; then
+                        echo "App is not reachable."
+                        docker logs flask_catgif_clean_flask_app
+                        exit 1
+                    fi
+                    '''
+                }
             }
         }
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
+            }
+        }
+        stage('Cleanup After Run') {
+            steps {
+                script {
+                    // Navigate to the flask_catgif_clean directory and clean up after the run
+                    sh 'cd devops-1144-git/flask_catgif_clean && docker-compose down'
+                }
             }
         }
     }
