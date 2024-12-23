@@ -28,7 +28,8 @@ pipeline {
                         def envVars = FLASK_ENV.split('\n')
                         envVars.each { line ->
                             def (key, value) = line.split('=')
-                            env[key] = value  // Set the environment variables for Docker Compose
+                            // Explicitly set the environment variables for Jenkins pipeline
+                            env[key] = value
                         }
 
                         // Print out the environment variables (optional, for debugging)
@@ -41,7 +42,7 @@ pipeline {
                         // Create .env file for Docker Compose with secrets
                         sh """
                         cd devops-1144-git/flask_catgif_clean
-                        echo "PORT=${env.PORT}" >> .env
+                        echo "PORT=${env.PORT}" > .env
                         echo "DB_HOST=${env.DB_HOST}" >> .env
                         echo "DB_USER=${env.DB_USER}" >> .env
                         echo "DB_PASSWORD=${env.DB_PASSWORD}" >> .env
