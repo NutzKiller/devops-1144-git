@@ -26,29 +26,32 @@ pipeline {
                     withCredentials([string(credentialsId: 'flask_env', variable: 'flask_env')]) {
                         echo "flask_env: ${flask_env}"
 
-                        // Split the flask_env string into individual key-value pairs and set environment variables
+                        // Split the flask_env string into individual key-value pairs
                         def envVars = flask_env.split('\n')
+                        def envMap = [:]
                         envVars.each { line ->
                             def (key, value) = line.split('=')
-                            echo "Setting environment variable: ${key} = ${value}"
-                            env[key.trim()] = value.trim()  // Trim spaces
+                            if (key && value) {
+                                envMap[key.trim()] = value.trim()  // Store in the map
+                                echo "Setting environment variable: ${key.trim()} = ${value.trim()}"
+                            }
                         }
 
                         // Print out the environment variables (optional, for debugging)
-                        echo "PORT: ${env.PORT}"
-                        echo "DB_HOST: ${env.DB_HOST}"
-                        echo "DB_USER: ${env.DB_USER}"
-                        echo "DB_PASSWORD: ${env.DB_PASSWORD}"
-                        echo "DB_NAME: ${env.DB_NAME}"
+                        echo "PORT: ${envMap['PORT']}"
+                        echo "DB_HOST: ${envMap['DB_HOST']}"
+                        echo "DB_USER: ${envMap['DB_USER']}"
+                        echo "DB_PASSWORD: ${envMap['DB_PASSWORD']}"
+                        echo "DB_NAME: ${envMap['DB_NAME']}"
 
                         // Create .env file for Docker Compose with secrets
                         sh """
                         cd devops-1144-git/flask_catgif_clean
-                        echo "PORT=${env.PORT}" > .env
-                        echo "DB_HOST=${env.DB_HOST}" >> .env
-                        echo "DB_USER=${env.DB_USER}" >> .env
-                        echo "DB_PASSWORD=${env.DB_PASSWORD}" >> .env
-                        echo "DB_NAME=${env.DB_NAME}" >> .env
+                        echo "PORT=${envMap['PORT']}" > .env
+                        echo "DB_HOST=${envMap['DB_HOST']}" >> .env
+                        echo "DB_USER=${envMap['DB_USER']}" >> .env
+                        echo "DB_PASSWORD=${envMap['DB_PASSWORD']}" >> .env
+                        echo "DB_NAME=${envMap['DB_NAME']}" >> .env
                         docker-compose build
                         """
                     }
@@ -76,7 +79,7 @@ pipeline {
 
                     // Test if the app is running
                     sh '''
-                    if ! curl -f http://localhost:${env.PORT}; then
+                    if ! curl -f http://localhost:${envMap['PORT']}; then
                         echo "App is not reachable."
                         docker logs flask_catgif_clean_flask_app
                         exit 1
