@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    triggers {
-        pollSCM('* * * * *')  // Poll SCM every minute
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -77,9 +73,9 @@ pipeline {
                     // Wait for the container to start
                     sh 'sleep 5'
 
-                    // Test if the app is running
+                    // Test if the app is running using bash for variable substitution
                     sh '''
-                    if ! curl -f http://localhost:${envMap['PORT']}; then
+                    if ! curl -f http://localhost:$PORT; then
                         echo "App is not reachable."
                         docker logs flask_catgif_clean_flask_app
                         exit 1
