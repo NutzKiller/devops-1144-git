@@ -7,7 +7,11 @@ pipeline {
 
     environment {
         // Use the 'flask_env' secret to inject environment variables
-        FLASK_ENV = credentials('flask_env')  // This is injected via Jenkins secrets
+        DB_HOST = credentials('DB_HOST')   // Credentials secret ID for DB_HOST
+        DB_USER = credentials('DB_USER')   // Credentials secret ID for DB_USER
+        DB_PASSWORD = credentials('DB_PASSWORD')   // Credentials secret ID for DB_PASSWORD
+        DB_NAME = credentials('DB_NAME')   // Credentials secret ID for DB_NAME
+        PORT = credentials('PORT')   // Credentials secret ID for PORT
     }
 
     stages {
@@ -26,16 +30,8 @@ pipeline {
                     sh 'rm -rf devops-1144-git'
                     sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
 
-                    // Extract values from the secret and set them as environment variables
+                    // Build the Docker images using docker-compose
                     sh '''
-                    # Split the secret into individual variables
-                    echo "$FLASK_ENV" | sed 's/DB_HOST=\([^ ]*\)/DB_HOST=\1/' > .env
-                    echo "$FLASK_ENV" | sed 's/DB_USER=\([^ ]*\)/DB_USER=\1/' >> .env
-                    echo "$FLASK_ENV" | sed 's/DB_PASSWORD=\([^ ]*\)/DB_PASSWORD=\1/' >> .env
-                    echo "$FLASK_ENV" | sed 's/DB_NAME=\([^ ]*\)/DB_NAME=\1/' >> .env
-                    echo "$FLASK_ENV" | sed 's/PORT=\([^ ]*\)/PORT=\1/' >> .env
-
-                    # Build the Docker images using the environment variables
                     cd devops-1144-git/flask_catgif_clean
                     docker-compose build
                     '''
@@ -47,12 +43,6 @@ pipeline {
                 script {
                     // Start the containers using Docker Compose with the environment variables
                     sh '''
-                    export PORT=${PORT}
-                    export DB_HOST=${DB_HOST}
-                    export DB_USER=${DB_USER}
-                    export DB_PASSWORD=${DB_PASSWORD}
-                    export DB_NAME=${DB_NAME}
-
                     cd devops-1144-git/flask_catgif_clean
                     docker-compose up -d
                     '''
