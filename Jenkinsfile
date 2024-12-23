@@ -6,12 +6,12 @@ pipeline {
     }
 
     environment {
-        // Use the 'flask_env' secret to inject environment variables
-        DB_HOST = credentials('DB_HOST')   // Credentials secret ID for DB_HOST
-        DB_USER = credentials('DB_USER')   // Credentials secret ID for DB_USER
-        DB_PASSWORD = credentials('DB_PASSWORD')   // Credentials secret ID for DB_PASSWORD
-        DB_NAME = credentials('DB_NAME')   // Credentials secret ID for DB_NAME
-        PORT = credentials('PORT')   // Credentials secret ID for PORT
+        // Inject Jenkins secrets into environment variables
+        DB_HOST = credentials('DB_HOST')   // Ensure the secret is named 'DB_HOST' in Jenkins
+        DB_USER = credentials('DB_USER')   // Ensure the secret is named 'DB_USER' in Jenkins
+        DB_PASSWORD = credentials('DB_PASSWORD')   // Ensure the secret is named 'DB_PASSWORD' in Jenkins
+        DB_NAME = credentials('DB_NAME')   // Ensure the secret is named 'DB_NAME' in Jenkins
+        PORT = credentials('PORT')         // Ensure the secret is named 'PORT' in Jenkins
     }
 
     stages {
