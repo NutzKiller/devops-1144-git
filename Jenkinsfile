@@ -5,11 +5,20 @@ pipeline {
         pollSCM('* * * * *')  // Poll SCM every minute
     }
 
+    environment {
+        // Inject secrets into environment variables
+        PORT = credentials('PORT_SECRET')
+        DB_HOST = credentials('DB_HOST_SECRET')
+        DB_USER = credentials('DB_USER_SECRET')
+        DB_PASSWORD = credentials('DB_PASSWORD_SECRET')
+        DB_NAME = credentials('DB_NAME_SECRET')
+    }
+
     stages {
         stage('Cleanup') {
             steps {
                 script {
-                    // Navigate to the flask_catgif_clean directory and stop/remove containers if they exist
+                    // Stop and remove any existing containers
                     sh 'cd devops-1144-git/flask_catgif_clean && docker-compose down || echo "No containers to stop or remove"'
                 }
             }
@@ -17,39 +26,24 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Clone the repository and build the Docker images using docker-compose
+                    // Clone the repository and build Docker images
                     sh 'rm -rf devops-1144-git'
                     sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
-                    
-                    // Ensure .env file exists and load the environment variables into the pipeline environment
                     sh '''
-                    if [ -f devops-1144-git/flask_catgif_clean/.env ]; then
-                        export $(cat devops-1144-git/flask_catgif_clean/.env | xargs)
-                    else
-                        echo ".env file not found"
-                        exit 1
-                    fi
+                    cd devops-1144-git/flask_catgif_clean
+                    PORT=${PORT} DB_HOST=${DB_HOST} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_NAME} docker-compose build
                     '''
-                    
-                    // Pass environment variables explicitly to docker-compose build
-                    sh 'cd devops-1144-git/flask_catgif_clean && PORT=$PORT DB_HOST=$DB_HOST DB_USER=$DB_USER DB_PASSWORD=$DB_PASSWORD DB_NAME=$DB_NAME docker-compose build'
                 }
             }
         }
         stage('Run') {
             steps {
                 script {
-                    // Ensure .env file is sourced and variables are passed to docker-compose
+                    // Start the containers using Docker Compose
                     sh '''
-                    if [ -f devops-1144-git/flask_catgif_clean/.env ]; then
-                        export $(cat devops-1144-git/flask_catgif_clean/.env | xargs)
-                    else
-                        echo ".env file not found"
-                        exit 1
-                    fi
+                    cd devops-1144-git/flask_catgif_clean
+                    PORT=${PORT} DB_HOST=${DB_HOST} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_NAME} docker-compose up -d
                     '''
-                    
-                    sh 'cd devops-1144-git/flask_catgif_clean && PORT=$PORT DB_HOST=$DB_HOST DB_USER=$DB_USER DB_PASSWORD=$DB_PASSWORD DB_NAME=$DB_NAME docker-compose up -d'
                 }
             }
         }
@@ -59,9 +53,9 @@ pipeline {
                     // Wait for the container to start
                     sh 'sleep 5'
                     
-                    // Test if the app is running by making a request
+                    // Test if the app is running
                     sh '''
-                    if ! curl -f http://localhost:5000; then
+                    if ! curl -f http://localhost:${PORT}; then
                         echo "App is not reachable."
                         docker logs flask_catgif_clean_flask_app
                         exit 1
@@ -78,7 +72,7 @@ pipeline {
         stage('Cleanup After Run') {
             steps {
                 script {
-                    // Navigate to the flask_catgif_clean directory and clean up after the run
+                    // Stop and clean up containers
                     sh 'cd devops-1144-git/flask_catgif_clean && docker-compose down'
                 }
             }
