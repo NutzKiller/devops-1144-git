@@ -25,6 +25,7 @@ pipeline {
                 script {
                     sh 'rm -rf devops-1144-git'
                     sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
+                    sh 'cat devops-1144-git/flask_catgif_clean/.env'
                     sh 'cd devops-1144-git/flask_catgif_clean && docker-compose build'
                 }
             }
