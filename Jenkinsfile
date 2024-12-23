@@ -7,6 +7,8 @@ pipeline {
                 script {
                     // Copy the .env file from the desktop to the project folder
                     sh 'cp /home/yuval3/Desktop/.env devops-1144-git/flask_catgif_clean/.env'
+                    // Verify the file was copied correctly
+                    sh 'cat devops-1144-git/flask_catgif_clean/.env'
                 }
             }
         }
@@ -14,7 +16,6 @@ pipeline {
         stage('Cleanup') {
             steps {
                 script {
-                    // Navigate to the flask_catgif_clean directory and stop/remove containers if they exist
                     sh 'cd devops-1144-git/flask_catgif_clean && docker-compose down || echo "No containers to stop or remove"'
                 }
             }
@@ -25,7 +26,6 @@ pipeline {
                 script {
                     sh 'rm -rf devops-1144-git'
                     sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
-                    sh 'cat devops-1144-git/flask_catgif_clean/.env'
                     sh 'cd devops-1144-git/flask_catgif_clean && docker-compose build'
                 }
             }
@@ -34,7 +34,6 @@ pipeline {
         stage('Run') {
             steps {
                 script {
-                    // Navigate to the flask_catgif_clean directory and start the container using docker-compose
                     sh 'cd devops-1144-git/flask_catgif_clean && docker-compose up -d'
                 }
             }
@@ -43,10 +42,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Wait for the container to start
                     sh 'sleep 5'
-
-                    // Test if the app is running by making a request
                     sh '''
                     if ! curl -f http://localhost:5000; then
                         echo "App is not reachable."
@@ -61,7 +57,6 @@ pipeline {
         stage('Cleanup After Run') {
             steps {
                 script {
-                    // Navigate to the flask_catgif_clean directory and clean up after the run
                     sh 'cd devops-1144-git/flask_catgif_clean && docker-compose down'
                 }
             }
