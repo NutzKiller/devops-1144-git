@@ -43,6 +43,7 @@ pipeline {
                 '''
                 // Test the app
                 sh '''
+                sleep 10
                 if ! curl -f http://localhost:5000; then
                     echo "App is not reachable."
                     docker logs flask_app_container
