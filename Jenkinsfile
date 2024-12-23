@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+        pollSCM('* * * * *')  // Poll SCM every minute
+    }
+    
     stages {
         stage('Checkout') {
             steps {
@@ -73,7 +77,7 @@ pipeline {
                     // Wait for the container to start
                     sh 'sleep 5'
 
-                    // Test if the app is running using bash for variable substitution
+                    // Test if the app is running
                     sh '''
                     if ! curl -f http://localhost:$PORT; then
                         echo "App is not reachable."
