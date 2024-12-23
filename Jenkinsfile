@@ -24,11 +24,13 @@ pipeline {
 
                     // Use withCredentials to inject 'flask_env' secret as environment variables
                     withCredentials([string(credentialsId: 'flask_env', variable: 'FLASK_ENV')]) {
+                        echo "FLASK_ENV: ${FLASK_ENV}"
+
                         // Split the FLASK_ENV string and set each environment variable
                         def envVars = FLASK_ENV.split('\n')
                         envVars.each { line ->
                             def (key, value) = line.split('=')
-                            // Explicitly set the environment variables for Jenkins pipeline
+                            echo "Setting environment variable: ${key} = ${value}"
                             env[key] = value
                         }
 
