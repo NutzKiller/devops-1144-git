@@ -20,15 +20,36 @@ pipeline {
                     // Clone the repository and build the Docker images using docker-compose
                     sh 'rm -rf devops-1144-git'
                     sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
-                    sh 'cd devops-1144-git/flask_catgif_clean && docker-compose build'
+                    
+                    // Ensure .env file exists and load the environment variables into the pipeline environment
+                    sh '''
+                    if [ -f devops-1144-git/flask_catgif_clean/.env ]; then
+                        export $(cat devops-1144-git/flask_catgif_clean/.env | xargs)
+                    else
+                        echo ".env file not found"
+                        exit 1
+                    fi
+                    '''
+                    
+                    // Pass environment variables explicitly to docker-compose build
+                    sh 'cd devops-1144-git/flask_catgif_clean && PORT=$PORT DB_HOST=$DB_HOST DB_USER=$DB_USER DB_PASSWORD=$DB_PASSWORD DB_NAME=$DB_NAME docker-compose build'
                 }
             }
         }
         stage('Run') {
             steps {
                 script {
-                    // Navigate to the flask_catgif_clean directory and start the container using docker-compose
-                    sh 'cd devops-1144-git/flask_catgif_clean && docker-compose up -d'
+                    // Ensure .env file is sourced and variables are passed to docker-compose
+                    sh '''
+                    if [ -f devops-1144-git/flask_catgif_clean/.env ]; then
+                        export $(cat devops-1144-git/flask_catgif_clean/.env | xargs)
+                    else
+                        echo ".env file not found"
+                        exit 1
+                    fi
+                    '''
+                    
+                    sh 'cd devops-1144-git/flask_catgif_clean && PORT=$PORT DB_HOST=$DB_HOST DB_USER=$DB_USER DB_PASSWORD=$DB_PASSWORD DB_NAME=$DB_NAME docker-compose up -d'
                 }
             }
         }
