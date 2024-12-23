@@ -26,8 +26,15 @@ pipeline {
                     sh 'rm -rf devops-1144-git'
                     sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
 
-                    // Build the Docker images using the environment variables injected by Jenkins
+                    // Export Jenkins secrets to environment variables
                     sh '''
+                    export PORT=${PORT}
+                    export DB_HOST=${DB_HOST}
+                    export DB_USER=${DB_USER}
+                    export DB_PASSWORD=${DB_PASSWORD}
+                    export DB_NAME=${DB_NAME}
+                    
+                    # Build the Docker images using the environment variables
                     cd devops-1144-git/flask_catgif_clean
                     docker-compose build
                     '''
@@ -39,6 +46,12 @@ pipeline {
                 script {
                     // Start the containers using Docker Compose with the environment variables
                     sh '''
+                    export PORT=${PORT}
+                    export DB_HOST=${DB_HOST}
+                    export DB_USER=${DB_USER}
+                    export DB_PASSWORD=${DB_PASSWORD}
+                    export DB_NAME=${DB_NAME}
+
                     cd devops-1144-git/flask_catgif_clean
                     docker-compose up -d
                     '''
