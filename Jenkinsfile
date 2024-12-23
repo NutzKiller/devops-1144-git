@@ -80,7 +80,7 @@ pipeline {
 
                     // Test if the app is running
                     sh '''
-                    if ! curl -f http://localhost:$PORT; then
+                    if ! curl -f http://localhost:5000; then
                         echo "App is not reachable."
                         docker logs flask_catgif_clean_flask_app
                         exit 1
