@@ -1,38 +1,36 @@
-version: "3.9"
-
 services:
   flask_app:
     image: nutzkiller/flask_catgif_clean:latest
     ports:
-      - "${PORT}:5000"  # Map the host PORT (from .env) to container's port 5000
+      - "${PORT}:5000"
     depends_on:
       db:
-        condition: service_healthy  # Wait for the database to be healthy before starting
+        condition: service_healthy
     environment:
       - DB_HOST=${DB_HOST}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
-      - PORT=${PORT}  # Pass the PORT variable to the container
-    restart: unless-stopped  # Automatically restart the app unless manually stopped
+      - PORT=${PORT}
+    restart: unless-stopped
 
   db:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}  # Root password
-      MYSQL_DATABASE: ${DB_NAME}  # The database to be created
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
     ports:
-      - "3306:3306"  # Expose MySQL port for local development, but remove it if not needed
+      - "3306:3306"
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount init.sql
-      - mysql-data:/var/lib/mysql  # Persist MySQL data
-    restart: unless-stopped  # Automatically restart the DB container unless manually stopped
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql-data:/var/lib/mysql
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
-      interval: 10s  # Check health every 10 seconds
+      interval: 10s
       retries: 5
-      start_period: 30s  # Allow up to 30 seconds for the service to start
-      timeout: 5s  # Timeout after 5 seconds
+      start_period: 30s
+      timeout: 5s
 
 volumes:
-  mysql-data:  # Declare a named volume for MySQL data
+  mysql-data:
