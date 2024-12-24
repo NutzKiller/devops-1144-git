@@ -74,8 +74,8 @@ pipeline {
                         // Only tag and push if VERSION is not empty
                         if (VERSION) {
                             echo "Tagging the Docker image"
-                            // Replace ${VERSION} with the actual version generated
-                            sh "docker tag flask_catgif_clean_flask_app:latest $IMAGE_NAME:$VERSION"
+                            // Use the correct image name (flask_catgif_clean) after the build
+                            sh "docker tag flask_catgif_clean:latest $IMAGE_NAME:$VERSION"
                             echo "Pushing the image to Docker Hub"
                             sh "docker push $IMAGE_NAME:$VERSION"
                         } else {
