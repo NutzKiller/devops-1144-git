@@ -35,14 +35,18 @@ pipeline {
 
                     echo "Latest Docker tag: $latestTag"
 
-                    // Split the version into major, minor, and patch
-                    def versionParts = latestTag.tokenize('.')
-                    def major = versionParts[0]
-                    def minor = versionParts[1]
-                    def patch = versionParts[2].toInteger() + 1  // Increment patch version
+                    // If no tags exist, set the initial version to 1.0.0
+                    if (latestTag == '') {
+                        VERSION = '1.0.0'
+                    } else {
+                        // Split the version into major, minor, and patch
+                        def versionParts = latestTag.tokenize('.')
+                        def major = versionParts[0]
+                        def minor = versionParts[1]
+                        def patch = versionParts[2].toInteger() + 1  // Increment patch version
+                        VERSION = "${major}.${minor}.${patch}"
+                    }
 
-                    // Set the new version
-                    VERSION = "${major}.${minor}.${patch}"
                     echo "Generated new version: $VERSION"
                 }
             }
