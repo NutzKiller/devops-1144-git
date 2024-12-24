@@ -6,20 +6,32 @@ pipeline {
         DB_PASSWORD = credentials('db_password')
         DB_NAME = credentials('db_name')
         PORT = '5000' // Non-sensitive, so we define it directly
+        IMAGE_NAME = 'nutzkiller/devops-1144-git'  // Docker Hub image name
+        VERSION = ''  // This will store the version tag
     }
     stages {
         stage('Prepare Environment') {
             steps {
                 script {
                     echo "Using the following database configurations:"
-                    // Log only non-sensitive info or safely mask it
-                    echo "DB_HOST: [hidden]" // Mask DB_HOST as well
+                    echo "DB_HOST: [hidden]"
                     echo "DB_USER: [hidden]"
                     echo "DB_NAME: [hidden]"
                     echo "PORT: $PORT"
                 }
             }
         }
+        
+        stage('Generate Version Tag') {
+            steps {
+                script {
+                    // Generate the version tag using the Git commit hash
+                    VERSION = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    echo "Using Git commit hash $VERSION as image version"
+                }
+            }
+        }
+
         stage('Docker Compose Up') {
             steps {
                 script {
@@ -29,6 +41,43 @@ pipeline {
                             docker-compose down
                             echo "Starting Docker Compose"
                             docker-compose up -d
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                script {
+                    // Use Jenkins Docker Hub credentials to log in
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh '''
+                            echo "Logging into Docker Hub"
+                            echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Build and Push Flask Image') {
+            steps {
+                script {
+                    dir('devops-1144-git/flask_catgif_clean') {
+                        sh '''
+                            echo "Building the Flask Docker image"
+                            docker-compose build flask_app
+                        '''
+                        // Tag the image with the unique version
+                        sh '''
+                            echo "Tagging the Docker image"
+                            docker tag flask_catgif_clean_flask_app:latest $IMAGE_NAME:$VERSION
+                        '''
+                        // Push the image to Docker Hub
+                        sh '''
+                            echo "Pushing the image to Docker Hub"
+                            docker push $IMAGE_NAME:$VERSION
                         '''
                     }
                 }
