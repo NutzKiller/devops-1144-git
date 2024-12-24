@@ -1,107 +1,58 @@
-
 pipeline {
     agent any
-
-    triggers {
-        pollSCM('* * * * *')  // Poll SCM every minute
+    environment {
+        // Load secrets from Jenkins
+        DB_HOST = credentials('flask_env')['DB_HOST']
+        DB_USER = credentials('flask_env')['DB_USER']
+        DB_PASSWORD = credentials('flask_env')['DB_PASSWORD']
+        DB_NAME = credentials('flask_env')['DB_NAME']
+        PORT = credentials('flask_env')['PORT']
     }
-    
+    triggers {
+        pollSCM('* * * * *')
+    }
     stages {
-        stage('Checkout') {
+        stage('Cleanup Old Repo') {
             steps {
-                script {
-                    // Checkout the latest changes from the repo
-                    checkout scm
+                echo "Removing old repo if it exists"
+                sh 'rm -rf devops-1144-git'
+            }
+        }
+        stage('Checkout Repo') {
+            steps {
+                echo "Cloning repository"
+                sh 'git clone https://github.com/nutzkiller/devops-1144-git.git'
+            }
+        }
+        stage('Docker Compose Up') {
+            steps {
+                dir('devops-1144-git/flask_catgif_clean') {
+                    echo "Starting Docker Compose"
+                    sh '''
+                        docker-compose down
+                        docker-compose up -d
+                    '''
                 }
             }
         }
-
-        stage('Build') {
+        stage('Health Check') {
             steps {
                 script {
-                    // Clone the repository and build Docker images
-                    sh 'rm -rf devops-1144-git'
-                    sh 'git clone https://github.com/NutzKiller/devops-1144-git.git'
-
-                    // Use withCredentials to inject 'flask_env' secret as environment variables
-                    withCredentials([string(credentialsId: 'flask_env', variable: 'flask_env')]) {
-                        echo "flask_env: ${flask_env}"
-
-                        // Split the flask_env string into individual key-value pairs
-                        def envVars = flask_env.split('\n')
-                        def envMap = [:]
-                        envVars.each { line ->
-                            def (key, value) = line.split('=')
-                            if (key && value) {
-                                envMap[key.trim()] = value.trim()  // Store in the map
-                                echo "Setting environment variable: ${key.trim()} = ${value.trim()}"
-                            }
-                        }
-
-                        // Print out the environment variables (optional, for debugging)
-                        echo "PORT: ${envMap['PORT']}"
-                        echo "DB_HOST: ${envMap['DB_HOST']}"
-                        echo "DB_USER: ${envMap['DB_USER']}"
-                        echo "DB_PASSWORD: ${envMap['DB_PASSWORD']}"
-                        echo "DB_NAME: ${envMap['DB_NAME']}"
-
-                        // Create .env file for Docker Compose with secrets
-                        sh """
-                        cd devops-1144-git/flask_catgif_clean
-                        echo "PORT=${envMap['PORT']}" > .env
-                        echo "DB_HOST=${envMap['DB_HOST']}" >> .env
-                        echo "DB_USER=${envMap['DB_USER']}" >> .env
-                        echo "DB_PASSWORD=${envMap['DB_PASSWORD']}" >> .env
-                        echo "DB_NAME=${envMap['DB_NAME']}" >> .env
-                        docker-compose build
-                        """
+                    def response = sh(script: "curl -f http://localhost:${PORT}", returnStatus: true)
+                    if (response != 0) {
+                        error "Health check failed! Flask app is not reachable."
+                    } else {
+                        echo "Health check passed! Flask app is running."
                     }
                 }
             }
         }
-
-        stage('Run') {
-            steps {
-                script {
-                    // Start the containers using Docker Compose
-                    sh '''
-                    cd devops-1144-git/flask_catgif_clean
-                    docker-compose up -d
-                    '''
-                }
-            }
-        }
-
-        stage('Test') {
-            steps {
-                script {
-                    // Wait for the container to start
-                    sh 'sleep 5'
-
-                    // Test if the app is running
-                    sh '''
-                    if ! curl -f http://localhost:5000; then
-                        echo "App is not reachable."
-                        docker logs flask_catgif_clean_flask_app
-                        exit 1
-                    fi
-                    '''
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying...'
-            }
-        }
-
-        stage('Cleanup') {
-            steps {
-                script {
-                    // Stop and clean up containers
-                    sh 'cd devops-1144-git/flask_catgif_clean && docker-compose down'
-                }
+    }
+    post {
+        always {
+            echo "Cleanup resources"
+            dir('devops-1144-git/flask_catgif_clean') {
+                sh 'docker-compose down'
             }
         }
     }
