@@ -1,12 +1,8 @@
 pipeline {
     agent any
     environment {
-        // Load secrets from Jenkins
-        DB_HOST = credentials('flask_env')['DB_HOST']
-        DB_USER = credentials('flask_env')['DB_USER']
-        DB_PASSWORD = credentials('flask_env')['DB_PASSWORD']
-        DB_NAME = credentials('flask_env')['DB_NAME']
-        PORT = credentials('flask_env')['PORT']
+        // Inject the Jenkins secret 'flask_env'
+        FLASK_ENV = credentials('flask_env') 
     }
     triggers {
         pollSCM('* * * * *')
@@ -29,9 +25,11 @@ pipeline {
                 dir('devops-1144-git/flask_catgif_clean') {
                     echo "Starting Docker Compose"
                     sh '''
+                        # Export environment variables from Jenkins secret
+                        export $(echo $FLASK_ENV | tr ',' '\\n' | xargs)
+                        
                         docker-compose down
-                        DB_HOST=${DB_HOST} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} \
-                        DB_NAME=${DB_NAME} PORT=${PORT} docker-compose up -d
+                        docker-compose up -d
                     '''
                 }
             }
@@ -39,7 +37,7 @@ pipeline {
         stage('Health Check') {
             steps {
                 script {
-                    def response = sh(script: "curl -f http://localhost:${PORT}", returnStatus: true)
+                    def response = sh(script: "curl -f http://localhost:5000", returnStatus: true)
                     if (response != 0) {
                         error "Health check failed! Flask app is not reachable."
                     } else {
