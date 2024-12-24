@@ -22,43 +22,17 @@ pipeline {
             }
         }
 
-        stage('Get Latest Docker Version') {
+        stage('Set Version') {
             steps {
                 script {
-                    // Fetch tags from Docker Hub
-                    def latestTag = sh(script: '''
-                        echo "Fetching latest Docker tag..."
-                        curl -s https://hub.docker.com/v2/repositories/nutzkiller/flask_catgif_clean/tags | \
-                        jq -r .results[].name | \
-                        sort -V | \
-                        tail -n 1
-                    ''', returnStdout: true).trim()
-
-                    // Output for debugging
-                    echo "Docker Hub latest tag: '$latestTag'"
-
-                    // Check if latestTag is empty or "latest"
-                    if (latestTag == '' || latestTag == 'latest') {
-                        echo "No valid tags found on Docker Hub or tag is 'latest'. Setting version to 1.0.0."
-                        VERSION = '1.0.0'
-                    } else {
-                        // Attempt to parse the version into parts
-                        def versionParts = latestTag.tokenize('.')
-                        if (versionParts.size() == 3) {
-                            def major = versionParts[0]
-                            def minor = versionParts[1]
-                            def patch = versionParts[2].toInteger() + 1  // Increment patch version
-                            VERSION = "${major}.${minor}.${patch}"
-                            echo "Generated new version: $VERSION"
-                        } else {
-                            echo "Invalid version format for tag '$latestTag'. Setting version to 1.0.0."
-                            VERSION = '1.0.0'
-                        }
-                    }
-
-                    // Check if VERSION is still empty after assignment
+                    // If VERSION is not set, generate a new version
                     if (VERSION == '') {
-                        error "VERSION is still not set after processing!"
+                        // Example: Generate a version based on the current date (YYYY.MM.DD)
+                        def date = new Date()
+                        VERSION = "${date.format('yyyy.MM.dd')}"
+                        echo "Generated new version: $VERSION"
+                    } else {
+                        echo "Using existing version: $VERSION"
                     }
                 }
             }
