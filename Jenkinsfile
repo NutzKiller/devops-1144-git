@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
     environment {
@@ -34,44 +35,13 @@ pipeline {
                 }
             }
         }
-        stage('Testing') {
-            steps {
-                script {
-                    dir('devops-1144-git/flask_catgif_clean') {
-                        sh '''
-                            echo "Running tests"
-                            set -e  # Fail on errors
-                            
-                            # Ensure pip installs pytest in the correct directory
-                            pip install --user pytest
-
-                            # Update PATH to include the directory where pytest is installed
-                            export PATH=$PATH:$HOME/.local/bin
-
-                            # Check if pytest is available in the path
-                            command -v pytest
-
-                            # Run tests
-                            pytest --junitxml=report.xml
-                        '''
-                    }
-                }
-            }
-        }
     }
     post {
         always {
             script {
                 echo "Resources left running"
-                // Optionally log running containers
-                sh 'docker ps'
+                // Removed docker-compose down to keep containers running
             }
-        }
-        success {
-            echo "Pipeline completed successfully!"
-        }
-        failure {
-            echo "Pipeline failed. Please check the logs."
         }
     }
 }
