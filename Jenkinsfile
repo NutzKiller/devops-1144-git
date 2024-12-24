@@ -68,16 +68,17 @@ pipeline {
                     dir('devops-1144-git/flask_catgif_clean') {
                         sh '''
                             echo "Building the Flask Docker image"
-                            docker-compose build flask_app
+                            docker-compose build flask_catgif_clean
                         '''
-                        // Only tag and push if VERSION is not empty
-                        if (VERSION) {
+                        // Ensure the image is built and exists
+                        def imageExists = sh(script: "docker images -q flask_catgif_clean", returnStdout: true).trim()
+                        if (imageExists) {
                             echo "Tagging the Docker image"
-                            sh "docker tag flask_catgif_clean_flask_app:latest $IMAGE_NAME:$VERSION"
+                            sh "docker tag flask_catgif_clean:latest $IMAGE_NAME:$VERSION"
                             echo "Pushing the image to Docker Hub"
                             sh "docker push $IMAGE_NAME:$VERSION"
                         } else {
-                            echo "VERSION is empty. Skipping push."
+                            echo "Docker image flask_catgif_clean:latest not found, skipping tag and push"
                         }
                     }
                 }
