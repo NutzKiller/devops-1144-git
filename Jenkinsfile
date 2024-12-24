@@ -39,6 +39,7 @@ pipeline {
                         sh '''
                             echo "Bringing down existing containers"
                             docker-compose down
+                            docker-compose pull
                             echo "Starting Docker Compose"
                             docker-compose up -d
                         '''
