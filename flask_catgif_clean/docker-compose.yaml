@@ -1,7 +1,6 @@
 services:
   flask_app:
-    # Use a dynamic image name with a version tag
-    image: nutzkiller/flask_catgif_clean:${VERSION}
+    image: nutzkiller/flask_catgif_clean:latest  # Make sure this is the correct image tag
     build:
       context: .
       dockerfile: Dockerfile
