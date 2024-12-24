@@ -25,11 +25,11 @@ pipeline {
         stage('Get Latest Docker Version') {
             steps {
                 script {
-                    // Fetch tags from Docker Hub
+                    // Fetch the latest Docker tag from Docker Hub
                     def latestTag = sh(script: '''
                         echo "Fetching latest Docker tag..."
-                        curl -s https://registry.hub.docker.com/v1/repositories/nutzkiller/flask_catgif_clean/tags | \
-                        jq -r '.[].name' | \
+                        curl -s https://hub.docker.com/v2/repositories/nutzkiller/flask_catgif_clean/tags | \
+                        jq -r '.results[].name' | \
                         sort -V | \
                         tail -n 1
                     ''', returnStdout: true).trim()
@@ -37,16 +37,16 @@ pipeline {
                     // Output for debugging
                     echo "Docker Hub latest tag: $latestTag"
 
-                    // Check if latestTag is empty
+                    // Check if the latestTag is empty
                     if (latestTag == '') {
                         echo "No tags found on Docker Hub. Setting version to 1.0.0."
                         VERSION = '1.0.0'
                     } else {
-                        // Increment patch version
+                        // Parse the version parts (major, minor, patch) and increment the patch version
                         def versionParts = latestTag.tokenize('.')
                         def major = versionParts[0]
                         def minor = versionParts[1]
-                        def patch = versionParts[2].toInteger() + 1  // Increment patch version
+                        def patch = versionParts[2].toInteger() + 1  // Increment the patch version
                         VERSION = "${major}.${minor}.${patch}"
                         echo "Generated new version: $VERSION"
                     }
