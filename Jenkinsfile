@@ -27,7 +27,7 @@ pipeline {
                     sh '''
                         # Parse and export environment variables from FLASK_ENV
                         echo "$FLASK_ENV" | tr ',' '\\n' | sed 's/^/export /' > env.sh
-                        source env.sh
+                        . env.sh  # Use . instead of source
                         
                         docker-compose down
                         docker-compose up -d
@@ -53,7 +53,7 @@ pipeline {
             echo "Cleanup resources"
             dir('devops-1144-git/flask_catgif_clean') {
                 sh '''
-                    source env.sh || true
+                    . env.sh || true  # Use . instead of source
                     docker-compose down
                 '''
             }
