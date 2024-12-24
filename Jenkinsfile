@@ -5,7 +5,7 @@ pipeline {
         DB_USER = credentials('db_user')
         DB_PASSWORD = credentials('db_password')
         DB_NAME = credentials('db_name')
-        PORT = '5000' // Non-sensitive, so we define it directly
+        PORT = '5000'  // Non-sensitive, so we define it directly
         IMAGE_NAME = 'nutzkiller/devops-1144-git'  // Docker Hub image name
         VERSION = ''  // This will store the version tag
     }
@@ -21,7 +21,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Generate Version Tag') {
             steps {
                 script {
