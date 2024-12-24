@@ -25,11 +25,11 @@ pipeline {
         stage('Get Latest Docker Version') {
             steps {
                 script {
-                    // Fetch the latest Docker tag from Docker Hub
+                    // Fetch tags from Docker Hub
                     def latestTag = sh(script: '''
                         echo "Fetching latest Docker tag..."
                         curl -s https://hub.docker.com/v2/repositories/nutzkiller/flask_catgif_clean/tags | \
-                        jq -r '.results[].name' | \
+                        jq -r .results[].name | \
                         sort -V | \
                         tail -n 1
                     ''', returnStdout: true).trim()
@@ -37,18 +37,23 @@ pipeline {
                     // Output for debugging
                     echo "Docker Hub latest tag: $latestTag"
 
-                    // Check if the latestTag is empty
-                    if (latestTag == '') {
-                        echo "No tags found on Docker Hub. Setting version to 1.0.0."
+                    // Check if latestTag is empty or "latest"
+                    if (latestTag == '' || latestTag == 'latest') {
+                        echo "No valid tags found on Docker Hub or tag is 'latest'. Setting version to 1.0.0."
                         VERSION = '1.0.0'
                     } else {
-                        // Parse the version parts (major, minor, patch) and increment the patch version
+                        // Attempt to parse the version into parts
                         def versionParts = latestTag.tokenize('.')
-                        def major = versionParts[0]
-                        def minor = versionParts[1]
-                        def patch = versionParts[2].toInteger() + 1  // Increment the patch version
-                        VERSION = "${major}.${minor}.${patch}"
-                        echo "Generated new version: $VERSION"
+                        if (versionParts.size() == 3) {
+                            def major = versionParts[0]
+                            def minor = versionParts[1]
+                            def patch = versionParts[2].toInteger() + 1  // Increment patch version
+                            VERSION = "${major}.${minor}.${patch}"
+                            echo "Generated new version: $VERSION"
+                        } else {
+                            echo "Invalid version format for tag '$latestTag'. Setting version to 1.0.0."
+                            VERSION = '1.0.0'
+                        }
                     }
                 }
             }
@@ -64,6 +69,7 @@ pipeline {
                             docker-compose pull
                             echo "Starting Docker Compose"
                             docker-compose up -d
+                            docker-compose logs -f  # This will show logs from containers
                         '''
                     }
                 }
@@ -116,6 +122,7 @@ pipeline {
         always {
             script {
                 echo "Resources left running"
+                // Optionally, clean up resources, e.g., stop containers or remove dangling images
             }
         }
     }
