@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
     environment {
@@ -18,9 +17,19 @@ pipeline {
                     echo "DB_USER: [hidden]"
                     echo "DB_NAME: [hidden]"
                     echo "PORT: $PORT"
+                    
+                    // Create a virtual environment and install dependencies
+                    sh '''
+                        echo "Creating virtual environment"
+                        python3 -m venv venv
+                        source venv/bin/activate
+                        echo "Installing dependencies"
+                        pip install -r devops-1144-git/flask_catgif_clean/requirements.txt
+                    '''
                 }
             }
         }
+        
         stage('Docker Compose Up') {
             steps {
                 script {
@@ -35,12 +44,27 @@ pipeline {
                 }
             }
         }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    dir('devops-1144-git/flask_catgif_clean') {
+                        sh '''
+                            echo "Running tests"
+                            source venv/bin/activate
+                            pytest --junitxml=report.xml
+                        '''
+                    }
+                }
+            }
+        }
     }
     post {
         always {
             script {
                 echo "Resources left running"
-                // Removed docker-compose down to keep containers running
+                // Keep containers running, don't shut them down
+                // You can add docker ps here to verify
             }
         }
     }
