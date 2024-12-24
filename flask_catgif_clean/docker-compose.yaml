@@ -1,7 +1,10 @@
-
 services:
   flask_app:
-    image: nutzkiller/flask_catgif_clean:latest
+    # Use a dynamic image name with a version tag
+    image: nutzkiller/flask_catgif_clean:${VERSION}
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     depends_on:
