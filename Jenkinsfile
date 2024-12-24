@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        // Inject the Jenkins secret 'flask_env'
-        FLASK_ENV = credentials('flask_env') 
+        // Inject Jenkins secret 'flask_env'
+        FLASK_ENV = credentials('flask_env')
     }
     triggers {
         pollSCM('* * * * *')
@@ -25,8 +25,9 @@ pipeline {
                 dir('devops-1144-git/flask_catgif_clean') {
                     echo "Starting Docker Compose"
                     sh '''
-                        # Export environment variables from Jenkins secret
-                        export $(echo $FLASK_ENV | tr ',' '\\n' | xargs)
+                        # Parse and export environment variables from FLASK_ENV
+                        echo "$FLASK_ENV" | tr ',' '\\n' | sed 's/^/export /' > env.sh
+                        source env.sh
                         
                         docker-compose down
                         docker-compose up -d
@@ -51,7 +52,10 @@ pipeline {
         always {
             echo "Cleanup resources"
             dir('devops-1144-git/flask_catgif_clean') {
-                sh 'docker-compose down'
+                sh '''
+                    source env.sh || true
+                    docker-compose down
+                '''
             }
         }
     }
