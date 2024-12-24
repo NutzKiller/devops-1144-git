@@ -38,10 +38,8 @@ pipeline {
     post {
         always {
             script {
-                echo "Cleaning up resources"
-                dir('devops-1144-git/flask_catgif_clean') {
-                    sh 'docker-compose down'
-                }
+                echo "Resources left running"
+                // Removed docker-compose down to keep containers running
             }
         }
     }
