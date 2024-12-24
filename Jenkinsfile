@@ -7,7 +7,7 @@ pipeline {
         DB_NAME = credentials('db_name')
         PORT = '5000'  // Non-sensitive, so we define it directly
         IMAGE_NAME = 'nutzkiller/flask_catgif_clean'  // Docker Hub image name
-        VERSION = ''  // This will store the version tag
+        VERSION = ''  // Will be determined dynamically
     }
     stages {
         stage('Prepare Environment') {
@@ -22,24 +22,28 @@ pipeline {
             }
         }
 
-        stage('Generate Version Tag') {
+        stage('Get Latest Docker Version') {
             steps {
                 script {
-                    // Fetch the latest Git tag
-                    def latestTag = sh(script: "git describe --tags --abbrev=0", returnStdout: true).trim()
-                    echo "Latest Git tag: $latestTag"
+                    // Use Docker Hub API to fetch the tags of the Docker image
+                    def latestTag = sh(script: '''
+                        curl -s https://registry.hub.docker.com/v1/repositories/nutzkiller/flask_catgif_clean/tags | \
+                        jq -r '.[].name' | \
+                        sort -V | \
+                        tail -n 1
+                    ''', returnStdout: true).trim()
 
-                    // Increment the version (patch version)
+                    echo "Latest Docker tag: $latestTag"
+
+                    // Split the version into major, minor, and patch
                     def versionParts = latestTag.tokenize('.')
                     def major = versionParts[0]
                     def minor = versionParts[1]
-                    def patch = versionParts[2].toInteger() + 1 // Increment patch version by 1
+                    def patch = versionParts[2].toInteger() + 1  // Increment patch version
+
+                    // Set the new version
                     VERSION = "${major}.${minor}.${patch}"
                     echo "Generated new version: $VERSION"
-
-                    // Tag the commit with the new version
-                    sh "git tag -a $VERSION -m 'Release version $VERSION'"
-                    sh "git push origin $VERSION"
                 }
             }
         }
@@ -63,7 +67,6 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 script {
-                    // Use Jenkins Docker Hub credentials to log in
                     withCredentials([usernamePassword(credentialsId: 'dockerhub_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh '''
                             echo "Logging into Docker Hub"
@@ -107,8 +110,6 @@ pipeline {
         always {
             script {
                 echo "Resources left running"
-                // Optionally stop the Docker containers after pushing to Docker Hub
-                // docker-compose down could be added here if needed
             }
         }
     }
