@@ -40,7 +40,12 @@ pipeline {
                     dir('devops-1144-git/flask_catgif_clean') {
                         sh '''
                             echo "Running tests"
-                            pytest --junitxml=report.xml || true
+                            set -e  # Fail on errors
+                            # Install pytest if not already available
+                            if ! command -v pytest &> /dev/null; then
+                                pip install pytest --user
+                            fi
+                            pytest --junitxml=report.xml
                         '''
                     }
                 }
@@ -51,7 +56,8 @@ pipeline {
         always {
             script {
                 echo "Resources left running"
-                // Removed docker-compose down to keep containers running
+                // Optionally log running containers
+                sh 'docker ps'
             }
         }
         success {
