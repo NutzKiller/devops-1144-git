@@ -6,7 +6,7 @@ pipeline {
         DB_PASSWORD = credentials('db_password')
         DB_NAME = credentials('db_name')
         PORT = '5000'  // Non-sensitive, so we define it directly
-        IMAGE_NAME = 'nutzkiller/devops-1144-git'  // Docker Hub image name
+        IMAGE_NAME = 'nutzkiller/flask_catgif_clean'  // Docker Hub image name
         VERSION = ''  // This will store the version tag
     }
     stages {
@@ -25,9 +25,21 @@ pipeline {
         stage('Generate Version Tag') {
             steps {
                 script {
-                    // Generate the version tag using the Git commit hash
-                    VERSION = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                    echo "Using Git commit hash $VERSION as image version"
+                    // Fetch the latest Git tag
+                    def latestTag = sh(script: "git describe --tags --abbrev=0", returnStdout: true).trim()
+                    echo "Latest Git tag: $latestTag"
+
+                    // Increment the version (patch version)
+                    def versionParts = latestTag.tokenize('.')
+                    def major = versionParts[0]
+                    def minor = versionParts[1]
+                    def patch = versionParts[2].toInteger() + 1 // Increment patch version by 1
+                    VERSION = "${major}.${minor}.${patch}"
+                    echo "Generated new version: $VERSION"
+
+                    // Tag the commit with the new version
+                    sh "git tag -a $VERSION -m 'Release version $VERSION'"
+                    sh "git push origin $VERSION"
                 }
             }
         }
@@ -66,25 +78,26 @@ pipeline {
             steps {
                 script {
                     dir('devops-1144-git/flask_catgif_clean') {
+                        // Build the Flask app Docker image
                         sh '''
                             echo "Building the Flask Docker image"
                             docker-compose build flask_app
                         '''
-                        // Ensure VERSION is not empty before using it
-                        if (VERSION != '') {
-                            // Tag the image with the unique version
-                            sh '''
-                                echo "Tagging the Docker image"
-                                docker tag flask_catgif_clean_flask_app:latest $IMAGE_NAME:$VERSION
-                            '''
-                            // Push the image to Docker Hub
-                            sh '''
-                                echo "Pushing the image to Docker Hub"
-                                docker push $IMAGE_NAME:$VERSION
-                            '''
-                        } else {
-                            error "VERSION is empty, cannot tag and push image"
-                        }
+                        
+                        // Tag the built image with both latest and the new version
+                        sh '''
+                            echo "Tagging the Docker image"
+                            if [ -z "$VERSION" ]; then echo "Error: VERSION is not set!"; exit 1; fi
+                            docker tag flask_catgif_clean_flask_app:latest $IMAGE_NAME:$VERSION
+                            docker tag flask_catgif_clean_flask_app:latest $IMAGE_NAME:latest
+                        '''
+                        
+                        // Push the Docker image to Docker Hub
+                        sh '''
+                            echo "Pushing the image to Docker Hub"
+                            docker push $IMAGE_NAME:$VERSION
+                            docker push $IMAGE_NAME:latest
+                        '''
                     }
                 }
             }
@@ -94,7 +107,8 @@ pipeline {
         always {
             script {
                 echo "Resources left running"
-                // Removed docker-compose down to keep containers running
+                // Optionally stop the Docker containers after pushing to Docker Hub
+                // docker-compose down could be added here if needed
             }
         }
     }
