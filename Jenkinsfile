@@ -65,11 +65,12 @@ pipeline {
                     dir('devops-1144-git/flask_catgif_clean') {
                         sh '''
                             echo "Bringing down existing containers"
-                            docker-compose down
+                            docker-compose down --volumes  # Ensuring cleanup of containers and volumes
                             docker-compose pull
                             echo "Starting Docker Compose"
                             docker-compose up -d
-                            docker-compose logs -f  # This will show logs from containers
+                            # Running logs in the background so the pipeline doesn't get stuck
+                            docker-compose logs -f &  
                         '''
                     }
                 }
@@ -121,8 +122,10 @@ pipeline {
     post {
         always {
             script {
-                echo "Resources left running"
-                // Optionally, clean up resources, e.g., stop containers or remove dangling images
+                echo "Cleaning up resources"
+                // Stop and remove the containers if needed
+                sh 'docker-compose down --volumes'  // Cleanup containers and volumes
+                sh 'docker system prune -f'  // Optional cleanup of unused images and stopped containers
             }
         }
     }
