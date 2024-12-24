@@ -70,16 +70,21 @@ pipeline {
                             echo "Building the Flask Docker image"
                             docker-compose build flask_app
                         '''
-                        // Tag the image with the unique version
-                        sh '''
-                            echo "Tagging the Docker image"
-                            docker tag flask_catgif_clean_flask_app:latest $IMAGE_NAME:$VERSION
-                        '''
-                        // Push the image to Docker Hub
-                        sh '''
-                            echo "Pushing the image to Docker Hub"
-                            docker push $IMAGE_NAME:$VERSION
-                        '''
+                        // Ensure VERSION is not empty before using it
+                        if (VERSION != '') {
+                            // Tag the image with the unique version
+                            sh '''
+                                echo "Tagging the Docker image"
+                                docker tag flask_catgif_clean_flask_app:latest $IMAGE_NAME:$VERSION
+                            '''
+                            // Push the image to Docker Hub
+                            sh '''
+                                echo "Pushing the image to Docker Hub"
+                                docker push $IMAGE_NAME:$VERSION
+                            '''
+                        } else {
+                            error "VERSION is empty, cannot tag and push image"
+                        }
                     }
                 }
             }
