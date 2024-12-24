@@ -30,7 +30,8 @@ pipeline {
                     echo "Starting Docker Compose"
                     sh '''
                         docker-compose down
-                        docker-compose up -d
+                        DB_HOST=${DB_HOST} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} \
+                        DB_NAME=${DB_NAME} PORT=${PORT} docker-compose up -d
                     '''
                 }
             }
