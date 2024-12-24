@@ -1,35 +1,22 @@
 pipeline {
     agent any
     environment {
-        // Inject Jenkins secret 'flask_env'
-        FLASK_ENV = credentials('flask_env')
-    }
-    triggers {
-        pollSCM('* * * * *')
+        DB_HOST = credentials('db_host')         // Jenkins secret for DB host
+        DB_USER = credentials('db_user')         // Jenkins secret for DB user
+        DB_PASSWORD = credentials('db_password') // Jenkins secret for DB password
+        DB_NAME = credentials('db_name')         // Jenkins secret for DB name
+        PORT = '5000'                            // Default port (if required)
     }
     stages {
-        stage('Cleanup Old Repo') {
-            steps {
-                echo "Removing old repo if it exists"
-                sh 'rm -rf devops-1144-git'
-            }
-        }
-        stage('Checkout Repo') {
-            steps {
-                echo "Cloning repository"
-                sh 'git clone https://github.com/nutzkiller/devops-1144-git.git'
-            }
-        }
         stage('Docker Compose Up') {
             steps {
                 dir('devops-1144-git/flask_catgif_clean') {
                     echo "Starting Docker Compose"
                     sh '''
-                        # Parse and export environment variables from FLASK_ENV
-                        echo "$FLASK_ENV" | tr ',' '\\n' | sed 's/^/export /' > env.sh
-                        . env.sh  # Use . instead of source
-                        
+                        # Bring down any existing containers
                         docker-compose down
+                        
+                        # Bring up the Docker containers
                         docker-compose up -d
                     '''
                 }
@@ -37,23 +24,18 @@ pipeline {
         }
         stage('Health Check') {
             steps {
-                script {
-                    def response = sh(script: "curl -f http://localhost:5000", returnStatus: true)
-                    if (response != 0) {
-                        error "Health check failed! Flask app is not reachable."
-                    } else {
-                        echo "Health check passed! Flask app is running."
-                    }
-                }
+                echo "Performing Health Check"
+                sh '''
+                    curl -f http://localhost:$PORT || exit 1
+                '''
             }
         }
     }
     post {
         always {
-            echo "Cleanup resources"
+            echo "Cleaning up resources"
             dir('devops-1144-git/flask_catgif_clean') {
                 sh '''
-                    . env.sh || true  # Use . instead of source
                     docker-compose down
                 '''
             }
