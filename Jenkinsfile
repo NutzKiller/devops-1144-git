@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
     environment {
@@ -36,7 +35,7 @@ pipeline {
                     ''', returnStdout: true).trim()
 
                     // Output for debugging
-                    echo "Docker Hub latest tag: $latestTag"
+                    echo "Docker Hub latest tag: '$latestTag'"
 
                     // Check if latestTag is empty or "latest"
                     if (latestTag == '' || latestTag == 'latest') {
@@ -55,6 +54,11 @@ pipeline {
                             echo "Invalid version format for tag '$latestTag'. Setting version to 1.0.0."
                             VERSION = '1.0.0'
                         }
+                    }
+
+                    // Check if VERSION is still empty after assignment
+                    if (VERSION == '') {
+                        error "VERSION is still not set after processing!"
                     }
                 }
             }
