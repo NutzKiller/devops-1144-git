@@ -41,6 +41,10 @@ pipeline {
                         sh '''
                             echo "Running tests"
                             set -e  # Fail on errors
+                            
+                            # Update PATH to include the directory where pytest is installed
+                            export PATH=$PATH:~/.local/bin
+
                             # Install pytest if not already available
                             if ! command -v pytest &> /dev/null; then
                                 pip install pytest --user
