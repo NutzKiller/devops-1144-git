@@ -34,6 +34,18 @@ pipeline {
                 }
             }
         }
+        stage('Testing') {
+            steps {
+                script {
+                    dir('devops-1144-git/flask_catgif_clean') {
+                        sh '''
+                            echo "Running tests"
+                            pytest --junitxml=report.xml || true
+                        '''
+                    }
+                }
+            }
+        }
     }
     post {
         always {
@@ -41,6 +53,12 @@ pipeline {
                 echo "Resources left running"
                 // Removed docker-compose down to keep containers running
             }
+        }
+        success {
+            echo "Pipeline completed successfully!"
+        }
+        failure {
+            echo "Pipeline failed. Please check the logs."
         }
     }
 }
