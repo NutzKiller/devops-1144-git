@@ -1,21 +1,22 @@
 pipeline {
     agent any
     environment {
-        DB_HOST = 'db'                      // Non-sensitive, set directly
-        DB_USER = 'root'                    // Non-sensitive, set directly
-        DB_PASSWORD = credentials('db_password') // Use Jenkins credentials for sensitive data
-        DB_NAME = 'catgifs'                 // Non-sensitive, set directly
-        PORT = '5000'                       // Non-sensitive, set directly
+        DB_HOST = credentials('db_host')
+        DB_USER = credentials('db_user')
+        DB_PASSWORD = credentials('db_password')
+        DB_NAME = credentials('db_name')
+        PORT = '5000' // Non-sensitive, so we define it directly
     }
     stages {
         stage('Prepare Environment') {
             steps {
                 script {
+                    echo "Using the following database configurations:"
                     echo "DB_HOST: $DB_HOST"
                     echo "DB_USER: $DB_USER"
                     echo "DB_NAME: $DB_NAME"
                     echo "PORT: $PORT"
-                    // Do not print sensitive data like DB_PASSWORD
+                    // Do NOT echo sensitive credentials like DB_PASSWORD
                 }
             }
         }
@@ -37,11 +38,9 @@ pipeline {
     post {
         always {
             script {
-                node {
-                    echo "Cleaning up resources"
-                    dir('devops-1144-git/flask_catgif_clean') {
-                        sh 'docker-compose down'
-                    }
+                echo "Cleaning up resources"
+                dir('devops-1144-git/flask_catgif_clean') {
+                    sh 'docker-compose down'
                 }
             }
         }
