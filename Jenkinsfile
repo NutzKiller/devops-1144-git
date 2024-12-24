@@ -26,7 +26,7 @@ pipeline {
                     dir('devops-1144-git/flask_catgif_clean') {
                         sh '''
                             echo "Bringing down existing containers"
-                            docker-compose down -v
+                            docker-compose down
                             echo "Starting Docker Compose"
                             docker-compose up -d
                         '''
