@@ -6,8 +6,8 @@ pipeline {
         DB_PASSWORD = credentials('db_password')
         DB_NAME = credentials('db_name')
         PORT = '5000'  // Non-sensitive, so we define it directly
-        IMAGE_NAME = 'nutzkiller/flask_catgif_clean'  // Docker Hub image name
-        VERSION = ''  // Will be determined dynamically
+        IMAGE_NAME = 'nutzkiller/devops-1144-git'  // Docker Hub image name
+        VERSION = ''  // This will store the version tag
     }
     stages {
         stage('Prepare Environment') {
@@ -22,18 +22,12 @@ pipeline {
             }
         }
 
-        stage('Set Version') {
+        stage('Generate Version Tag') {
             steps {
                 script {
-                    // If VERSION is not set, generate a new version
-                    if (VERSION == '') {
-                        // Example: Generate a version based on the current date (YYYY.MM.DD)
-                        def date = new Date()
-                        VERSION = "${date.format('yyyy.MM.dd')}"
-                        echo "Generated new version: $VERSION"
-                    } else {
-                        echo "Using existing version: $VERSION"
-                    }
+                    // Generate the version tag using the Git commit hash or fallback to 'latest'
+                    VERSION = sh(script: 'git rev-parse --short HEAD || echo "latest"', returnStdout: true).trim()
+                    echo "Using Git commit hash $VERSION as image version"
                 }
             }
         }
@@ -44,12 +38,10 @@ pipeline {
                     dir('devops-1144-git/flask_catgif_clean') {
                         sh '''
                             echo "Bringing down existing containers"
-                            docker-compose down --volumes  # Ensuring cleanup of containers and volumes
+                            docker-compose down
                             docker-compose pull
                             echo "Starting Docker Compose"
                             docker-compose up -d
-                            # Running logs in the background so the pipeline doesn't get stuck
-                            docker-compose logs -f &  
                         '''
                     }
                 }
@@ -59,6 +51,7 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 script {
+                    // Use Jenkins Docker Hub credentials to log in
                     withCredentials([usernamePassword(credentialsId: 'dockerhub_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh '''
                             echo "Logging into Docker Hub"
@@ -73,26 +66,19 @@ pipeline {
             steps {
                 script {
                     dir('devops-1144-git/flask_catgif_clean') {
-                        // Build the Flask app Docker image
                         sh '''
                             echo "Building the Flask Docker image"
                             docker-compose build flask_app
                         '''
-                        
-                        // Tag the built image with both latest and the new version
-                        sh '''
+                        // Only tag and push if VERSION is not empty
+                        if (VERSION) {
                             echo "Tagging the Docker image"
-                            if [ -z "$VERSION" ]; then echo "Error: VERSION is not set!"; exit 1; fi
-                            docker tag flask_catgif_clean_flask_app:latest $IMAGE_NAME:$VERSION
-                            docker tag flask_catgif_clean_flask_app:latest $IMAGE_NAME:latest
-                        '''
-                        
-                        // Push the Docker image to Docker Hub
-                        sh '''
+                            sh "docker tag flask_catgif_clean_flask_app:latest $IMAGE_NAME:$VERSION"
                             echo "Pushing the image to Docker Hub"
-                            docker push $IMAGE_NAME:$VERSION
-                            docker push $IMAGE_NAME:latest
-                        '''
+                            sh "docker push $IMAGE_NAME:$VERSION"
+                        } else {
+                            echo "VERSION is empty. Skipping push."
+                        }
                     }
                 }
             }
@@ -101,10 +87,8 @@ pipeline {
     post {
         always {
             script {
-                echo "Cleaning up resources"
-                // Stop and remove the containers if needed
-                sh 'docker-compose down --volumes'  // Cleanup containers and volumes
-                sh 'docker system prune -f'  // Optional cleanup of unused images and stopped containers
+                echo "Resources left running"
+                // Removed docker-compose down to keep containers running
             }
         }
     }
