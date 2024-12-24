@@ -12,11 +12,10 @@ pipeline {
             steps {
                 script {
                     echo "Using the following database configurations:"
-                    echo "DB_HOST: $DB_HOST"
-                    echo "DB_USER: $DB_USER"
-                    echo "DB_NAME: $DB_NAME"
+                    echo "DB_HOST: ${env.DB_HOST}"  // Avoid echoing sensitive values
+                    echo "DB_USER: [hidden]"       // Do not print sensitive credentials
+                    echo "DB_NAME: [hidden]"       // Do not print sensitive credentials
                     echo "PORT: $PORT"
-                    // Do NOT echo sensitive credentials like DB_PASSWORD
                 }
             }
         }
