@@ -42,13 +42,16 @@ pipeline {
                             echo "Running tests"
                             set -e  # Fail on errors
                             
-                            # Update PATH to include the directory where pytest is installed
-                            export PATH=$PATH:~/.local/bin
+                            # Ensure pip installs pytest in the correct directory
+                            pip install --user pytest
 
-                            # Install pytest if not already available
-                            if ! command -v pytest &> /dev/null; then
-                                pip install pytest --user
-                            fi
+                            # Update PATH to include the directory where pytest is installed
+                            export PATH=$PATH:$HOME/.local/bin
+
+                            # Check if pytest is available in the path
+                            command -v pytest
+
+                            # Run tests
                             pytest --junitxml=report.xml
                         '''
                     }
