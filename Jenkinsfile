@@ -26,15 +26,10 @@ pipeline {
                     checkout([$class: 'GitSCM',
                               branches: [[name: '*/main']],
                               userRemoteConfigs: [[url: 'https://github.com/NutzKiller/devops-1144-git.git']]])
-                }
-            }
-        }
-
-        stage('Verify Repository Structure') {
-            steps {
-                script {
-                    echo "Verifying repository structure..."
-                    sh 'ls -R devops-1144-git'
+                    
+                    echo "Repository cloned. Verifying directory structure..."
+                    sh 'pwd'  // Confirm current directory
+                    sh 'ls -R' // List files recursively to check the repo structure
                 }
             }
         }
