@@ -25,7 +25,7 @@ pipeline {
                 script {
                     echo "Cloning the repository..."
                     checkout([$class: 'GitSCM',
-                              branches: [[name: '*/main']]),
+                              branches: [[name: '*/main']],
                               userRemoteConfigs: [[url: 'https://github.com/NutzKiller/devops-1144-git.git']]])
 
                     echo "Repository cloned. Verifying directory structure..."
