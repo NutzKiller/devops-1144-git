@@ -55,13 +55,19 @@ pipeline {
             steps {
                 script {
                     dir('devops-1144-git/flask_catgif_clean') {
-                        sh '''
-                            echo "Bringing down existing containers"
-                            docker-compose down
-                            docker-compose pull
-                            echo "Starting Docker Compose"
-                            docker-compose up -d
-                        '''
+                        script {
+                            if (fileExists('docker-compose.yml')) {
+                                echo "Found docker-compose.yml, bringing down existing containers"
+                                sh '''
+                                    docker-compose down
+                                    docker-compose pull
+                                    echo "Starting Docker Compose"
+                                    docker-compose up -d
+                                '''
+                            } else {
+                                error "docker-compose.yml not found in the directory. Exiting pipeline."
+                            }
+                        }
                     }
                 }
             }
