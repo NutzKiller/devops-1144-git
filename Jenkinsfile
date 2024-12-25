@@ -5,9 +5,9 @@ pipeline {
         DB_USER = credentials('db_user')
         DB_PASSWORD = credentials('db_password')
         DB_NAME = credentials('db_name')
-        PORT = '5000'  // Non-sensitive, so we define it directly
-        IMAGE_NAME = 'nutzkiller/flask_catgit_clean'  // Docker Hub image name
-        VERSION = ''  // This will store the version tag
+        PORT = '5000'
+        IMAGE_NAME = 'nutzkiller/flask_catgif_clean'
+        VERSION = ''
     }
     stages {
         stage('Prepare Environment') {
@@ -25,9 +25,8 @@ pipeline {
         stage('Generate Version Tag') {
             steps {
                 script {
-                    // Generate the version tag using the Git commit hash or fallback to 'latest'
-                    VERSION = sh(script: 'git rev-parse --short HEAD || echo "latest"', returnStdout: true).trim()
-                    echo "Using Git commit hash $VERSION as image version"
+                    VERSION = BUILD_NUMBER
+                    echo "Using Jenkins build number $VERSION as the image version"
                 }
             }
         }
@@ -51,7 +50,6 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 script {
-                    // Use Jenkins Docker Hub credentials to log in
                     withCredentials([usernamePassword(credentialsId: 'dockerhub_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh '''
                             echo "Logging into Docker Hub"
@@ -66,17 +64,12 @@ pipeline {
             steps {
                 script {
                     dir('devops-1144-git/flask_catgif_clean') {
-                        // Build the Docker image using docker-compose
                         sh '''
                             echo "Building the Flask Docker image"
                             docker-compose build flask_app
                         '''
-                        // Only tag and push if VERSION is not empty
                         if (VERSION) {
-                            echo "Tagging the Docker image"
-                            // Tag the image based on the service defined in the compose file
                             sh "docker tag nutzkiller/flask_catgif_clean:latest $IMAGE_NAME:$VERSION"
-                            echo "Pushing the image to Docker Hub"
                             sh "docker push $IMAGE_NAME:$VERSION"
                         } else {
                             echo "VERSION is empty. Skipping push."
@@ -90,7 +83,6 @@ pipeline {
         always {
             script {
                 echo "Resources left running"
-                // Removed docker-compose down to keep containers running
             }
         }
     }
