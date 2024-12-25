@@ -26,10 +26,19 @@ pipeline {
                     checkout([$class: 'GitSCM',
                               branches: [[name: '*/main']],
                               userRemoteConfigs: [[url: 'https://github.com/NutzKiller/devops-1144-git.git']]])
-                    
+
                     echo "Repository cloned. Verifying directory structure..."
                     sh 'pwd'  // Confirm current directory
                     sh 'ls -R' // List files recursively to check the repo structure
+                }
+            }
+        }
+
+        stage('Verify Repository Structure') {
+            steps {
+                script {
+                    echo "Checking directory structure of devops-1144-git..."
+                    sh 'ls -R devops-1144-git'
                 }
             }
         }
@@ -58,6 +67,7 @@ pipeline {
         stage('Docker Compose Up') {
             steps {
                 script {
+                    // Navigate to the flask_catgif_clean directory
                     dir('devops-1144-git/flask_catgif_clean') {
                         script {
                             echo "Checking if docker-compose.yaml exists..."
