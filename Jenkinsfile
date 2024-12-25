@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
     environment {
@@ -26,7 +25,7 @@ pipeline {
                 script {
                     echo "Cloning the repository..."
                     checkout([$class: 'GitSCM',
-                              branches: [[name: '*/main']],
+                              branches: [[name: '*/main']]),
                               userRemoteConfigs: [[url: 'https://github.com/NutzKiller/devops-1144-git.git']]])
 
                     echo "Repository cloned. Verifying directory structure..."
@@ -60,10 +59,13 @@ pipeline {
         stage('Docker Compose Up') {
             steps {
                 script {
-                    // Navigate to the flask_catgif_clean directory
+                    // Ensure we are in the correct directory inside the cloned repo
                     dir('devops-1144-git/flask_catgif_clean') {
                         script {
                             echo "Checking if docker-compose.yaml exists..."
+                            // List files in the current directory to confirm existence of docker-compose.yaml
+                            sh 'ls -l'
+
                             if (fileExists('docker-compose.yaml')) {
                                 echo "Found docker-compose.yaml, bringing down existing containers"
                                 sh '''
