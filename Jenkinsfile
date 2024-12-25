@@ -31,6 +31,22 @@ pipeline {
             }
         }
 
+        stage('Verify Docker Compose File') {
+            steps {
+                script {
+                    echo 'Verifying the presence of docker-compose.yml...'
+                    sh '''
+                        if [ ! -f devops-1144-git/flask_catgif_clean/docker-compose.yml ] && [ ! -f devops-1144-git/flask_catgif_clean/docker-compose.yaml ]; then
+                            echo "No docker-compose.yml or docker-compose.yaml file found in devops-1144-git/flask_catgif_clean"
+                            exit 1
+                        else
+                            echo "docker-compose file found."
+                        fi
+                    '''
+                }
+            }
+        }
+
         stage('List Directory Contents') {
             steps {
                 script {
@@ -65,7 +81,7 @@ pipeline {
             steps {
                 script {
                     echo 'Changing to directory: devops-1144-git/flask_catgif_clean'
-                    dir('devops-1144-git/flask_catgif_clean') {  // Ensure the correct directory is used
+                    dir('devops-1144-git/flask_catgif_clean') {
                         sh '''
                             echo "Current directory: $(pwd)"
                             echo "Listing files in current directory:"
@@ -77,9 +93,6 @@ pipeline {
                                 COMPOSE_FILE=docker-compose.yml
                             elif [ -f docker-compose.yaml ]; then
                                 COMPOSE_FILE=docker-compose.yaml
-                            else
-                                echo "No docker-compose.yml or docker-compose.yaml file found in $(pwd)"
-                                exit 1
                             fi
 
                             docker-compose -f $COMPOSE_FILE down || echo "No containers to stop"
@@ -107,7 +120,7 @@ pipeline {
         stage('Build and Push Flask Image') {
             steps {
                 script {
-                    dir('devops-1144-git/flask_catgif_clean') {  // Ensure the correct directory is used
+                    dir('devops-1144-git/flask_catgif_clean') {
                         echo 'Building and pushing the Flask Docker image...'
                         sh '''
                             docker-compose build flask_app
