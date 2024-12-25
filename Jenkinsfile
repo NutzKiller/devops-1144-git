@@ -63,13 +63,14 @@ pipeline {
         stage('Docker Compose Up') {
             steps {
                 script {
+                    echo "Changing to directory: devops-1144-git/flask_catgif_clean"
                     dir('devops-1144-git/flask_catgif_clean') {  // Ensure the correct directory is used
+                        echo "Current directory: $(pwd)"
+                        echo "Listing files in current directory:"
+                        sh 'ls -l'
+
                         echo "Running Docker Compose commands..."
                         sh '''
-                            # Debug: List files in the current directory
-                            echo "Current directory: $(pwd)"
-                            ls -l
-
                             # Check for both docker-compose.yml and docker-compose.yaml
                             if [ -f docker-compose.yml ]; then
                                 COMPOSE_FILE=docker-compose.yml
