@@ -30,6 +30,15 @@ pipeline {
             }
         }
 
+        stage('Verify Repository Structure') {
+            steps {
+                script {
+                    echo "Verifying repository structure..."
+                    sh 'ls -R devops-1144-git'
+                }
+            }
+        }
+
         stage('Prepare Environment') {
             steps {
                 script {
@@ -56,6 +65,7 @@ pipeline {
                 script {
                     dir('devops-1144-git/flask_catgif_clean') {
                         script {
+                            echo "Checking if docker-compose.yaml exists..."
                             if (fileExists('docker-compose.yaml')) {
                                 echo "Found docker-compose.yaml, bringing down existing containers"
                                 sh '''
