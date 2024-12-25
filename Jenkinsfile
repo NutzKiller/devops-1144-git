@@ -14,7 +14,8 @@ pipeline {
             steps {
                 script {
                     echo 'Cleaning up workspace...'
-                    sh 'rm -rf *'  // Clean up everything in the workspace
+                    // Clean up everything in the workspace before cloning
+                    sh 'rm -rf *'
                 }
             }
         }
