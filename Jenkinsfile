@@ -66,14 +66,23 @@ pipeline {
                     dir('devops-1144-git/flask_catgif_clean') {  // Ensure the correct directory is used
                         echo "Running Docker Compose commands..."
                         sh '''
-                            if [ ! -f docker-compose.yml ] && [ ! -f docker-compose.yaml ]; then
-                                echo "No docker-compose.yml file found in $(pwd)"
+                            # Debug: List files in the current directory
+                            echo "Current directory: $(pwd)"
+                            ls -l
+
+                            # Check for both docker-compose.yml and docker-compose.yaml
+                            if [ -f docker-compose.yml ]; then
+                                COMPOSE_FILE=docker-compose.yml
+                            elif [ -f docker-compose.yaml ]; then
+                                COMPOSE_FILE=docker-compose.yaml
+                            else
+                                echo "No docker-compose.yml or docker-compose.yaml file found in $(pwd)"
                                 exit 1
                             fi
 
-                            docker-compose down || echo "No containers to stop"
-                            docker-compose pull
-                            docker-compose up -d
+                            docker-compose -f $COMPOSE_FILE down || echo "No containers to stop"
+                            docker-compose -f $COMPOSE_FILE pull
+                            docker-compose -f $COMPOSE_FILE up -d
                         '''
                     }
                 }
