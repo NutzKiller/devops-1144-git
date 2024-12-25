@@ -30,6 +30,15 @@ pipeline {
             }
         }
 
+        stage('List Directory Contents') {
+            steps {
+                script {
+                    echo "Listing directory contents..."
+                    sh 'ls -R'
+                }
+            }
+        }
+
         stage('Prepare Environment') {
             steps {
                 script {
