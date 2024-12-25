@@ -14,7 +14,6 @@ pipeline {
             steps {
                 script {
                     echo "Cleaning up previous workspace..."
-                    // Remove any previous clone of the repo
                     sh 'rm -rf devops-1144-git'
                 }
             }
@@ -30,7 +29,8 @@ pipeline {
 
                     echo "Repository cloned. Verifying directory structure..."
                     sh 'pwd'  // Confirm current directory
-                    sh 'ls -R' // List files recursively to check the repo structure
+                    sh 'ls -R devops-1144-git' // List files recursively to check repo structure
+                    sh 'ls devops-1144-git/flask_catgif_clean' // Verify the target directory
                 }
             }
         }
@@ -60,13 +60,20 @@ pipeline {
             steps {
                 script {
                     dir('devops-1144-git/flask_catgif_clean') {
-                        sh '''
-                            echo "Bringing down existing containers"
-                            docker-compose down
-                            docker-compose pull
-                            echo "Starting Docker Compose"
-                            docker-compose up -d
-                        '''
+                        script {
+                            echo "Checking if docker-compose.yaml exists..."
+                            if (fileExists('docker-compose.yaml')) {
+                                echo "Found docker-compose.yaml. Bringing down existing containers..."
+                                sh '''
+                                    docker-compose down
+                                    docker-compose pull
+                                    echo "Starting Docker Compose..."
+                                    docker-compose up -d
+                                '''
+                            } else {
+                                error "docker-compose.yaml not found in the directory. Exiting pipeline."
+                            }
+                        }
                     }
                 }
             }
