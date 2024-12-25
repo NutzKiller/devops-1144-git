@@ -13,8 +13,8 @@ pipeline {
         stage('Cleanup Workspace') {
             steps {
                 script {
-                    echo "Cleaning up previous workspace..."
-                    sh 'rm -rf devops-1144-git'
+                    echo "Cleaning up workspace..."
+                    sh 'rm -rf *'  // Clean up everything in the workspace
                 }
             }
         }
@@ -26,9 +26,18 @@ pipeline {
                     checkout([$class: 'GitSCM',
                               branches: [[name: '*/main']],
                               userRemoteConfigs: [[url: 'https://github.com/NutzKiller/devops-1144-git.git']]])
-                    echo "Repository cloned. Verifying directory structure..."
-                    sh 'pwd'
-                    sh 'ls -R'
+                }
+            }
+        }
+
+        stage('Prepare Environment') {
+            steps {
+                script {
+                    echo "Using the following database configurations:"
+                    echo "DB_HOST: [hidden]"
+                    echo "DB_USER: [hidden]"
+                    echo "DB_NAME: [hidden]"
+                    echo "PORT: $PORT"
                 }
             }
         }
@@ -37,7 +46,7 @@ pipeline {
             steps {
                 script {
                     VERSION = "1.0.${BUILD_NUMBER}"
-                    echo "Using Jenkins build number $VERSION as the image version"
+                    echo "Generated version tag: $VERSION"
                 }
             }
         }
@@ -46,9 +55,9 @@ pipeline {
             steps {
                 script {
                     dir('devops-1144-git/flask_catgif_clean') {
-                        echo "Bringing down existing containers and starting new ones..."
+                        echo "Running Docker Compose commands..."
                         sh '''
-                            docker-compose down
+                            docker-compose down || echo "No containers to stop"
                             docker-compose pull
                             docker-compose up -d
                         '''
@@ -61,6 +70,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        echo "Logging into Docker Hub..."
                         sh '''
                             echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
                         '''
@@ -73,15 +83,12 @@ pipeline {
             steps {
                 script {
                     dir('devops-1144-git/flask_catgif_clean') {
+                        echo "Building and pushing the Flask Docker image..."
                         sh '''
                             docker-compose build flask_app
+                            docker tag nutzkiller/flask_catgif_clean:latest $IMAGE_NAME:$VERSION
+                            docker push $IMAGE_NAME:$VERSION
                         '''
-                        if (VERSION) {
-                            sh "docker tag nutzkiller/flask_catgif_clean:latest $IMAGE_NAME:$VERSION"
-                            sh "docker push $IMAGE_NAME:$VERSION"
-                        } else {
-                            echo "VERSION is empty. Skipping push."
-                        }
                     }
                 }
             }
@@ -90,7 +97,8 @@ pipeline {
     post {
         always {
             script {
-                echo "Pipeline completed."
+                echo "Pipeline completed. Checking for any resources left running."
+                sh 'docker ps'
             }
         }
     }
