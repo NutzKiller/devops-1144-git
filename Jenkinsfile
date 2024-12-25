@@ -51,7 +51,7 @@ pipeline {
             steps {
                 script {
                     VERSION = "1.0.${BUILD_NUMBER}"
-                    echo "Generated version tag: $VERSION"
+                    echo "Using Jenkins build number $VERSION as the image version"
                 }
             }
         }
@@ -59,25 +59,14 @@ pipeline {
         stage('Docker Compose Up') {
             steps {
                 script {
-                    // Ensure we are in the correct directory inside the cloned repo
                     dir('devops-1144-git/flask_catgif_clean') {
-                        script {
-                            echo "Checking if docker-compose.yaml exists..."
-                            // List files in the current directory to confirm existence of docker-compose.yaml
-                            sh 'ls -l'
-
-                            if (fileExists('docker-compose.yaml')) {
-                                echo "Found docker-compose.yaml, bringing down existing containers"
-                                sh '''
-                                    docker-compose down
-                                    docker-compose pull
-                                    echo "Starting Docker Compose"
-                                    docker-compose up -d
-                                '''
-                            } else {
-                                error "docker-compose.yaml not found in the directory. Exiting pipeline."
-                            }
-                        }
+                        sh '''
+                            echo "Bringing down existing containers"
+                            docker-compose down
+                            docker-compose pull
+                            echo "Starting Docker Compose"
+                            docker-compose up -d
+                        '''
                     }
                 }
             }
