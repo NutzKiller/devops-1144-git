@@ -13,7 +13,7 @@ pipeline {
         stage('Cleanup Workspace') {
             steps {
                 script {
-                    echo "Cleaning up previous workspace..."
+                    echo "Cleaning up workspace..."
                     sh 'rm -rf devops-1144-git'
                 }
             }
@@ -26,11 +26,7 @@ pipeline {
                     checkout([$class: 'GitSCM',
                               branches: [[name: '*/main']],
                               userRemoteConfigs: [[url: 'https://github.com/NutzKiller/devops-1144-git.git']]])
-
-                    echo "Repository cloned. Verifying directory structure..."
-                    sh 'pwd'  // Confirm current directory
-                    sh 'ls -R devops-1144-git' // List files recursively to check repo structure
-                    sh 'ls devops-1144-git/flask_catgif_clean' // Verify the target directory
+                    echo "Repository cloned successfully."
                 }
             }
         }
@@ -56,24 +52,17 @@ pipeline {
             }
         }
 
-        stage('Docker Compose Up') {
+        stage('Docker Compose Down and Up') {
             steps {
                 script {
+                    echo "Navigating to Flask project directory..."
                     dir('devops-1144-git/flask_catgif_clean') {
-                        script {
-                            echo "Checking if docker-compose.yaml exists..."
-                            if (fileExists('docker-compose.yaml')) {
-                                echo "Found docker-compose.yaml. Bringing down existing containers..."
-                                sh '''
-                                    docker-compose down
-                                    docker-compose pull
-                                    echo "Starting Docker Compose..."
-                                    docker-compose up -d
-                                '''
-                            } else {
-                                error "docker-compose.yaml not found in the directory. Exiting pipeline."
-                            }
-                        }
+                        echo "Bringing down existing containers and starting Docker Compose..."
+                        sh '''
+                            docker-compose down
+                            docker-compose pull
+                            docker-compose up -d
+                        '''
                     }
                 }
             }
@@ -83,8 +72,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        echo "Logging into Docker Hub..."
                         sh '''
-                            echo "Logging into Docker Hub"
                             echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
                         '''
                     }
@@ -95,17 +84,13 @@ pipeline {
         stage('Build and Push Flask Image') {
             steps {
                 script {
+                    echo "Building and pushing the Flask Docker image..."
                     dir('devops-1144-git/flask_catgif_clean') {
                         sh '''
-                            echo "Building the Flask Docker image"
                             docker-compose build flask_app
+                            docker tag nutzkiller/flask_catgif_clean:latest $IMAGE_NAME:$VERSION
+                            docker push $IMAGE_NAME:$VERSION
                         '''
-                        if (VERSION) {
-                            sh "docker tag nutzkiller/flask_catgif_clean:latest $IMAGE_NAME:$VERSION"
-                            sh "docker push $IMAGE_NAME:$VERSION"
-                        } else {
-                            echo "VERSION is empty. Skipping push."
-                        }
                     }
                 }
             }
@@ -114,7 +99,10 @@ pipeline {
     post {
         always {
             script {
-                echo "Resources left running"
+                echo "Cleaning up resources..."
+                dir('devops-1144-git/flask_catgif_clean') {
+                    sh 'docker-compose down'
+                }
             }
         }
     }
