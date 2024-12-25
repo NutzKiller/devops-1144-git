@@ -13,7 +13,8 @@ pipeline {
         stage('Cleanup Workspace') {
             steps {
                 script {
-                    echo "Cleaning up workspace..."
+                    echo "Cleaning up previous workspace..."
+                    // Remove any previous clone of the repo
                     sh 'rm -rf devops-1144-git'
                 }
             }
@@ -30,15 +31,6 @@ pipeline {
                     echo "Repository cloned. Verifying directory structure..."
                     sh 'pwd'  // Confirm current directory
                     sh 'ls -R' // List files recursively to check the repo structure
-                }
-            }
-        }
-
-        stage('Verify Repository Structure') {
-            steps {
-                script {
-                    echo "Checking directory structure of devops-1144-git..."
-                    sh 'ls -R devops-1144-git'
                 }
             }
         }
