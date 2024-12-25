@@ -54,9 +54,14 @@ pipeline {
         stage('Docker Compose Up') {
             steps {
                 script {
-                    dir('devops-1144-git/flask_catgif_clean') {
+                    dir('devops-1144-git/flask_catgif_clean') {  // Ensure the correct directory is used
                         echo "Running Docker Compose commands..."
                         sh '''
+                            if [ ! -f docker-compose.yml ] && [ ! -f docker-compose.yaml ]; then
+                                echo "No docker-compose.yml file found in $(pwd)"
+                                exit 1
+                            fi
+
                             docker-compose down || echo "No containers to stop"
                             docker-compose pull
                             docker-compose up -d
@@ -82,7 +87,7 @@ pipeline {
         stage('Build and Push Flask Image') {
             steps {
                 script {
-                    dir('devops-1144-git/flask_catgif_clean') {
+                    dir('devops-1144-git/flask_catgif_clean') {  // Ensure the correct directory is used
                         echo "Building and pushing the Flask Docker image..."
                         sh '''
                             docker-compose build flask_app
