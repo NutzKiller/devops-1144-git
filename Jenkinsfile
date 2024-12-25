@@ -6,7 +6,7 @@ pipeline {
         DB_PASSWORD = credentials('db_password')
         DB_NAME = credentials('db_name')
         PORT = '5000'  // Non-sensitive, so we define it directly
-        IMAGE_NAME = 'nutzkiller/devops-1144-git'  // Docker Hub image name
+        IMAGE_NAME = 'nutzkiller/flask_catgit_clean'  // Docker Hub image name
         VERSION = ''  // This will store the version tag
     }
     stages {
