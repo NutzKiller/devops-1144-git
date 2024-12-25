@@ -10,6 +10,26 @@ pipeline {
         VERSION = ''
     }
     stages {
+        stage('Cleanup Workspace') {
+            steps {
+                script {
+                    echo "Cleaning up workspace..."
+                    sh 'rm -rf devops-1144-git'
+                }
+            }
+        }
+
+        stage('Clone Repository') {
+            steps {
+                script {
+                    echo "Cloning the repository..."
+                    checkout([$class: 'GitSCM',
+                              branches: [[name: '*/main']],
+                              userRemoteConfigs: [[url: 'https://github.com/NutzKiller/devops-1144-git.git']]])
+                }
+            }
+        }
+
         stage('Prepare Environment') {
             steps {
                 script {
@@ -25,8 +45,8 @@ pipeline {
         stage('Generate Version Tag') {
             steps {
                 script {
-                    VERSION = BUILD_NUMBER
-                    echo "Using Jenkins build number $VERSION as the image version"
+                    VERSION = "1.0.${BUILD_NUMBER}"
+                    echo "Generated version tag: $VERSION"
                 }
             }
         }
