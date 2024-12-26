@@ -18,7 +18,15 @@ pipeline {
 
         stage('Clone Repository') {
             steps {
-                git url: 'https://github.com/your-repo/devops-1144-git.git', branch: 'main'
+                script {
+                    checkout([$class: 'GitSCM', 
+                        branches: [[name: '*/main']], 
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/your-repo/devops-1144-git.git', 
+                            credentialsId: 'Github-cred'
+                        ]]
+                    ])
+                }
             }
         }
 
