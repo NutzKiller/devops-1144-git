@@ -22,7 +22,7 @@ pipeline {
                     checkout([$class: 'GitSCM', 
                         branches: [[name: '*/main']], 
                         userRemoteConfigs: [[
-                            url: 'https://github.com/your-repo/devops-1144-git.git', 
+                            url: 'https://github.com/NutzKiller/devops-1144-git.git', 
                             credentialsId: 'Github-cred'
                         ]]
                     ])
