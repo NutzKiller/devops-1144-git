@@ -31,27 +31,7 @@ pipeline {
             }
         }
 
-        // stage('Prepare Environment') {
-        //     steps {
-        //         script {
-        //             echo "Using the following database configurations:"
-        //             echo "DB_HOST: [hidden]"
-        //             echo "DB_USER: [hidden]"
-        //             echo "DB_NAME: [hidden]"
-        //             echo "PORT: $PORT"
-        //         }
-        //     }
-        // }
-
-        // stage('Generate Version Tag') {
-        //     steps {
-        //         script {
-        //             VERSION = "${BUILD_NUMBER}"
-        //             echo "Using Jenkins build number $VERSION as the image version"
-        //         }
-        //     }
-        // }
-
+        
         stage('Docker Compose Up') {
             steps {
                 script {
