@@ -31,17 +31,17 @@ pipeline {
             }
         }
 
-        stage('Prepare Environment') {
-            steps {
-                script {
-                    echo "Using the following database configurations:"
-                    echo "DB_HOST: [hidden]"
-                    echo "DB_USER: [hidden]"
-                    echo "DB_NAME: [hidden]"
-                    echo "PORT: $PORT"
-                }
-            }
-        }
+        // stage('Prepare Environment') {
+        //     steps {
+        //         script {
+        //             echo "Using the following database configurations:"
+        //             echo "DB_HOST: [hidden]"
+        //             echo "DB_USER: [hidden]"
+        //             echo "DB_NAME: [hidden]"
+        //             echo "PORT: $PORT"
+        //         }
+        //     }
+        // }
 
         stage('Generate Version Tag') {
             steps {
