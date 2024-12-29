@@ -90,7 +90,8 @@ pipeline {
                         '''
                         if (VERSION) {
                             sh "docker tag $IMAGE_NAME:latest $IMAGE_NAME:$VERSION"
-                            sh "docker push $IMAGE_NAME:$VERSION"
+                            sh "docker push $IMAGE_NAME:"1.0.{$VERSION}" 
+                            // $VERSION"
                         } else {
                             echo "VERSION is empty. Skipping push."
                         }
