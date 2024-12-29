@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
     environment {
@@ -89,9 +90,8 @@ pipeline {
                             docker-compose build flask_app
                         '''
                         if (VERSION) {
-                            sh "docker tag $IMAGE_NAME:latest $IMAGE_NAME:$VERSION"
-                            sh "docker push $IMAGE_NAME:"1.0.{$VERSION}" 
-                            // $VERSION"
+                            sh "docker tag $IMAGE_NAME:latest $IMAGE_NAME:1.0.$VERSION"
+                            sh "docker push $IMAGE_NAME:$VERSION"
                         } else {
                             echo "VERSION is empty. Skipping push."
                         }
