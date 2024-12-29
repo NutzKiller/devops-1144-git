@@ -8,7 +8,7 @@ pipeline {
         DB_NAME = credentials('db_name')
         PORT = '5000'
         IMAGE_NAME = 'nutzkiller/flask_catgif_clean'
-        VERSION = ''
+        VERSION = "${BUILD_NUMBER}"
     }
     stages {
         stage('Clean Workspace') {
@@ -43,14 +43,14 @@ pipeline {
         //     }
         // }
 
-        stage('Generate Version Tag') {
-            steps {
-                script {
-                    VERSION = "${BUILD_NUMBER}"
-                    echo "Using Jenkins build number $VERSION as the image version"
-                }
-            }
-        }
+        // stage('Generate Version Tag') {
+        //     steps {
+        //         script {
+        //             VERSION = "${BUILD_NUMBER}"
+        //             echo "Using Jenkins build number $VERSION as the image version"
+        //         }
+        //     }
+        // }
 
         stage('Docker Compose Up') {
             steps {
